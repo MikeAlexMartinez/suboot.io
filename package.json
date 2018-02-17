@@ -1,0 +1,21 @@
+{
+  "name": "fantasy-stats",
+  "version": "0.0.1",
+  "description": "This fetches the necessary data from the EPL fantasy website",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "fantasy-stats"
+  },
+  "author": "Michael Martinez",
+  "license": "MIT",
+  "dependencies": {
+    "async": "^2.4.1",
+    "mongodb": "^2.2.29",
+    "request": "^2.81.0",
+    "request-promise": "^4.2.1"
+  }
+}

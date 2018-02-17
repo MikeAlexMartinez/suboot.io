@@ -1,0 +1,78 @@
+Player Statistics:
+
+Player picks:
+
+    https://fantasy.premierleague.com/drf/entry/60560/event/37/picks
+
+    60560 = user id
+    37 = GW
+
+Returns:
+
+    active_chip: tells us which cards the player used during that week
+
+    automatic_subs: which players were subbed in for the other.
+
+    entry_history: general stats specific to the user concerning that gameweek.
+
+    event: general stats about the gameweek
+
+    picks: the players in the squad.
+
+To get the top x players:
+
+    GET
+    
+    https://fantasy.premierleague.com/drf/leagues-classic-standings/313?
+        phase = 1 &         // controls which phase 1 is overall, then months starting in August
+                            // ending in may.
+        le-page = 1 &       // not sure what this does?
+        ls-page = 3         // this return 101-150
+
+        rank is player rank, but with players often having the save number of points the lower
+        you get rank_sort is what sorts them into their final order.
+
+        position  500001 starts at ls-page 10001
+        position 1000001 starts at ls-page 20001
+
+Returns:
+
+    league: info
+    new_entries: 
+    standings: has_next
+               number,
+               results: the entries, 0-49 is entries, 50 is me. unless im ranked higher, 
+                in which case I am 0 and rest is 1-50
+
+
+To get player transfer data:
+
+    GET
+    https://fantasy.premierleague.com/drf/entry/60560/transfers
+
+        where 60560 = user id
+
+Returns:
+    entry: user info
+    history: all the transfers made during the season.
+    wildcards: When wildcards were played during the season.
+    leagues: League info.
+
+
+To get historical data and summary gameweek data:
+
+    GET
+    https://fantasy.premierleague.com/drf/entry/60560/history
+
+        where 60560 = user id
+
+Returns:
+    chips: lists when all chips were used, if used.
+    entry: general user stats
+    history: Each gameweek stats
+    leagues: league info etc
+    season: historical season info, how well this user did in previous seasons
+        of the competition.
+
+
+    
