@@ -4,7 +4,6 @@
 const async = require('async');
 
 // My modules
-const save = require('./saveToMongo');
 const read = require('./readFromMongo');
 const api = require('./get-from-api').getJSONFromAPI;
 

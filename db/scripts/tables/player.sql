@@ -3,6 +3,7 @@
  *
  */
 CREATE TABLE player(
+  id	SMALLINT PRIMARY KEY UNIQUE NOT NULL,
   assists	SMALLINT NOT NULL,
   bonus	SMALLINT NOT NULL,
   bps	SMALLINT NOT NULL,
@@ -26,7 +27,6 @@ CREATE TABLE player(
   goals_conceded	SMALLINT NOT NULL,
   goals_scored	SMALLINT NOT NULL,
   ict_index	REAL NOT NULL,
-  id	SMALLINT PRIMARY KEY UNIQUE NOT NULL,
   in_dreamteam	BOOLEAN NOT NULL,
   influence	REAL NOT NULL,
   loaned_in	SMALLINT NOT NULL,

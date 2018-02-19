@@ -1,5 +1,5 @@
 {
-  "name": "fantasy-stats",
+  "name": "suboot.io",
   "version": "0.0.1",
   "description": "This fetches the necessary data from the EPL fantasy website",
   "main": "index.js",
@@ -8,14 +8,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "fantasy-stats"
+    "url": "suboot.io"
   },
   "author": "Michael Martinez",
   "license": "MIT",
   "dependencies": {
     "async": "^2.4.1",
-    "mongodb": "^2.2.29",
+    "decamelize": "^2.0.0",
+    "pg": "^7.4.1",
+    "pg-hstore": "^2.3.2",
     "request": "^2.81.0",
-    "request-promise": "^4.2.1"
+    "request-promise": "^4.2.1",
+    "sequelize": "^4.33.4"
   }
 }

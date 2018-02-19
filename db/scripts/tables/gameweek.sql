@@ -3,6 +3,7 @@
  *
  */
 CREATE TABLE gameweek(
+  id	SMALLINT UNIQUE PRIMARY KEY NOT NULL,
   average_entry_score	SMALLINT NOT NULL,
   data_checked	BOOLEAN NOT NULL,
   deadline_time	TIMESTAMPTZ NOT NULL,
@@ -12,7 +13,6 @@ CREATE TABLE gameweek(
   finished	BOOLEAN NOT NULL,
   highest_score	SMALLINT,
   highest_scoring_entry	INTEGER,
-  id	SMALLINT UNIQUE PRIMARY KEY NOT NULL,
   is_current	BOOLEAN NOT NULL,
   is_next	BOOLEAN NOT NULL,
   is_previous	BOOLEAN NOT NULL,

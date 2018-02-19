@@ -1,0 +1,61 @@
+/**
+ *
+ *
+ */
+CREATE TABLE stat_item(
+  id	SMALLINT UNIQUE PRIMARY KEY,
+  stat_item_name	VARCHAR(50) NOT NULL,
+  stat_item_is_general	BOOLEAN NOT NULL,
+  stat_item_type	VARCHAR(6) NOT NULL
+);
+
+INSERT INTO stat_item
+VALUES
+  (1, 'assists', FALSE, 'attack'),
+  (2, 'attempted_passes', TRUE, 'normal'),
+  (3, 'big_chances_created', FALSE, 'attack'),
+  (4, 'big_chances_missed', FALSE, 'attack'),
+  (5, 'bonus', TRUE, 'normal'),
+  (6, 'bps', TRUE, 'normal'),
+  (7, 'clean_sheets', FALSE, 'defend'),
+  (8, 'clearances_blocks_interceptions', FALSE, 'defend'),
+  (9, 'completed_passes', TRUE, 'normal'),
+  (10, 'creativity', TRUE, 'normal'),
+  (11, 'dribbles', FALSE, 'attack'),
+  (12, 'ea_index', TRUE, 'normal'),
+  (13, 'errors_leading_to_goal', FALSE, 'defend'),
+  (14, 'errors_leading_to_goal_attempt', FALSE, 'defend'),
+  (15, 'fouls', TRUE, 'normal'),
+  (16, 'goals_conceded', FALSE, 'defend'),
+  (17, 'goals_scored', FALSE, 'attack'),
+  (18, 'ict_index', TRUE, 'normal'),
+  (19, 'influence', TRUE, 'normal'),
+  (20, 'key_passes', TRUE, 'normal'),
+  (21, 'loaned_in', TRUE, 'normal'),
+  (22, 'loaned_out', TRUE, 'normal'),
+  (23, 'minutes', TRUE, 'normal'),
+  (24, 'offside', FALSE, 'attack'),
+  (25, 'open_play_crosses', FALSE, 'attack'),
+  (26, 'own_goals', FALSE, 'defend'),
+  (27, 'penalties_conceded', TRUE, 'defend'),
+  (28, 'penalties_missed', TRUE, 'attack'),
+  (29, 'penalties_saved', TRUE, 'keeper'),
+  (30, 'recoveries', FALSE, 'defend'),
+  (31, 'red_cards', TRUE, 'normal'),
+  (32, 'round', TRUE, 'normal'),
+  (33, 'saves', FALSE, 'keeper'),
+  (34, 'selected', TRUE, 'normal'),
+  (35, 'tackled', FALSE, 'defend'),
+  (36, 'tackles', FALSE, 'defend'),
+  (37, 'target_missed', FALSE, 'attack'),
+  (38, 'threat', TRUE, 'normal'),
+  (39, 'total_points', TRUE, 'normal'),
+  (40, 'transfers_balance', TRUE, 'normal'),
+  (41, 'transfers_in', TRUE, 'normal'),
+  (42, 'transfers_out', TRUE, 'normal'),
+  (43, 'value', TRUE, 'normal'),
+  (44, 'winning_goals', FALSE, 'attack'),
+  (45, 'yellow_cards', TRUE, 'normal'),
+  (46, 'opponent_team', TRUE, 'normal'),
+  (47, 'team_a_score', TRUE, 'normal'),
+  (48, 'team_h_score', TRUE, 'normal');

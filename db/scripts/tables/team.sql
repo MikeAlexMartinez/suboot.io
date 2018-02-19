@@ -4,8 +4,8 @@
  */
 CREATE TABLE team(
   code SMALLINT UNIQUE PRIMARY KEY NOT NULL,
-  current_event_fixture	SMALLINT NOT NULL,
   id SMALLINT UNIQUE NOT NULL,
+  current_event_fixture	SMALLINT NOT NULL,
   name	VARCHAR(35) NOT NULL,
   next_event_fixture SMALLINT NOT NULL,
   short_name	VARCHAR(3) NOT NULL,
