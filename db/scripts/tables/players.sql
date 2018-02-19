@@ -2,8 +2,10 @@
  *  player is equivalent to element found at https://fantasy.premierleague.com/drf/bootstrap-static
  *
  */
-CREATE TABLE player(
+CREATE TABLE players(
   id	SMALLINT PRIMARY KEY UNIQUE NOT NULL,
+  createdAt TIMESTAMPTZ NOT NULL,
+  updatedAt TIMESTAMPTZ NOT NULL,
   assists	SMALLINT NOT NULL,
   bonus	SMALLINT NOT NULL,
   bps	SMALLINT NOT NULL,

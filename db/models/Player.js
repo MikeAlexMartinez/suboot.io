@@ -22,11 +22,11 @@ const Player = {
   },
   chance_of_playing_this_round: {
     type: Sequelize.SMALLINT,
-    allowNull: false,
+    defaultValue: 0,
   },
   chance_of_playing_next_round: {
     type: Sequelize.SMALLINT,
-    allowNull: false,
+    defaultValue: 0,
   },
   clean_sheets: {
     type: Sequelize.SMALLINT,
@@ -152,9 +152,9 @@ const Player = {
     type: Sequelize.STRING(25),
     allowNull: false,
   },
-  point_per_game: {
+  points_per_game: {
     type: Sequelize.REAL,
-    allowNull: false,
+    defaultValue: 0.0,
   },
   red_cards: {
     type: Sequelize.SMALLINT,
@@ -202,19 +202,19 @@ const Player = {
   },
   transfers_in: {
     type: Sequelize.INTEGER,
-    allowNull: false,
+    defaultValue: 0,
   },
-  transfer_in_event: {
+  transfers_in_event: {
     type: Sequelize.INTEGER,
-    allowNull: false,
+    defaultValue: 0,
   },
-  transfer_out: {
+  transfers_out: {
     type: Sequelize.INTEGER,
-    allowNull: false,
+    defaultValue: 0,
   },
-  transfer_out_event: {
+  transfers_out_event: {
     type: Sequelize.INTEGER,
-    allowNull: false,
+    defaultValue: 0,
   },
   value_form: {
     type: Sequelize.REAL,
@@ -232,6 +232,14 @@ const Player = {
     type: Sequelize.SMALLINT,
     allowNull: false,
   },
+  createdAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date()
+  },
+  updatedAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date()
+  }
 };
 
 module.exports = Player;

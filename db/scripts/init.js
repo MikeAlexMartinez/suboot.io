@@ -52,7 +52,7 @@ db
     return createAndSeedModel('scoring_item', scoringItem, data.scoringItem);
   })
   .then(() => {
-    return createAndSeedModel('scoring_sytem', scoringSystem, data.scoringSystem);
+    return createAndSeedModel('scoring_system', scoringSystem, data.scoringSystem);
   })
   .then(() => {
     console.log(`Database Initialization complete!`);

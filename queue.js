@@ -9,7 +9,7 @@ let q  = async.queue(function(val, callback) {
     
     setTimeout(function(){
         end.push(val);
-        callback("Pushed " + val);
+        callback(null, "Pushed " + val);
     }, 1000)
     
 }, 1);
@@ -18,10 +18,10 @@ q.drain = function() {
     console.log(end);
 };
 
-q.push(arr, function(err) {
+q.push(arr, function(err, message) {
     if (err) {
         console.log(err);
     }
-
+    console.log(message);
     console.log("finished processing item");
 });
