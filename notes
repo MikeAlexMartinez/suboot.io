@@ -20,3 +20,6 @@ which key's value changed, and how many instances were affected by this change o
 After running this for a while I should be able to optimise the scheduler 
 so that the process isn't running to frequently, while also ensuring the Data
 is as fresh as is necessary.
+
+After creating the two tables, one should be able to validate the number
+of entries in the detail table against the header table occurences value.

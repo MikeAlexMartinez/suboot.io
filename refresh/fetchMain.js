@@ -7,10 +7,16 @@ const async = require('async');
 
 // Models and DB
 const db = require('../db/connect');
-const { Players, Teams, Gameweeks } = require('../db/Models');
-const playerDef = require('../db/models/players');
-const teamDef = require('../db/models/teams');
-const gameweekDef = require('../db/models/gameweeks');
+const { Players, 
+        Teams, 
+        Gameweeks, 
+        UpdateHeaders, 
+        UpdateDetails } = require('../db/Models');
+const playerDef = require('../db/models/Players');
+const teamDef = require('../db/models/Teams');
+const gameweekDef = require('../db/models/Gameweeks');
+const updateHeaderDef = require('../db/models/UpdateHeaders');
+const updateDetailDef = require('../db/models/UpdateDetails');
 
 // API
 const fetchFromAPI = require('./fetchFromAPI');
@@ -27,6 +33,10 @@ let data;
 
 getMainData()
   .then(() => {
+    // set up update tables
+    return generateUpdateTables();
+  })
+  .then(() => {
     // update the players table
     return manageModelUpdate('players', playerDef, Players, insertPlayerData);
   })
@@ -37,7 +47,10 @@ getMainData()
   .then(() => {
     // update the Gameweeks table
     return manageModelUpdate('gameweeks', gameweekDef, Gameweeks, insertGameweekData);
-  })
+  })/*
+  .then(() => {
+    
+  })*/
   .then(() => {
     console.log('UPDATE COMPLETE');
 
@@ -120,10 +133,15 @@ function checkAndCreateTable(model, modelDef, Model) {
           );`
         )
         .spread((results, metadata) => {
-          console.log(results);
-          console.log(metadata);
-
-          return createTable();
+          // if rowCount greater than 0 table exists
+          if( metadata.rowCount > 0 ) {
+            res({
+              message: '=> Model defined, table already exists! <=',
+              status: true
+            });
+          } else {
+            return createTable();
+          }
         })
         .then((obj) => {
           res(obj);
@@ -164,6 +182,37 @@ function checkAndCreateTable(model, modelDef, Model) {
         });
     });
   }
+}
+
+
+/*
+  ######################################
+  #                                    #
+  #  Update models Specific functions  #
+  #                                    #
+  ######################################
+*/
+
+function generateUpdateTables() {
+  return new Promise((res, rej) => {
+
+    // create header table
+    checkAndCreateTable('update_headers', updateHeaderDef, UpdateHeaders)
+      .then(() => {
+        return checkAndCreateTable('update_details', updateDetailDef, UpdateDetails);
+      })
+      .then(() => {
+        // link models
+        UpdateHeaders.hasMany(UpdateDetails, {foreignKey: 'header_id', sourceKey: 'id'});
+        UpdateDetails.belongsTo(UpdateHeaders, {foreignKey: 'header_id', targetKey: 'id'});
+      
+        res();
+      })
+      .catch(err => {
+        rej(err);
+      });
+
+  });
 }
 
 /*
@@ -246,12 +295,9 @@ function insertTeamData(teams) {
 function transformTeam(team) {
   let newTeam = Object.assign({}, team);
 
-  console.log(team);
-
   newTeam.current_event_fixture = team.current_event_fixture.map(v => v.id);
   newTeam.next_event_fixture = team.next_event_fixture.map(v => v.id);
 
-  console.log(newTeam);
   return newTeam;
 }
 
