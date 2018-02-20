@@ -1,0 +1,22 @@
+
+# Capture update information #
+
+Requirement: I need to be able to analysis how often
+  specific items change so that I am not hitting the API end points
+  any more often than necessary.
+
+Design: Data to track this should be kept in a single table to ensure
+  ease of monitoring and to allow for the same functionality to be applied 
+  to different models.
+  
+  For more detail we could record data in another table (with reference to the first) table, to capture which item changed, the previous value, the new value
+  and any difference between the values.   
+
+When a specific update runs, for example I hit the main API. I retrieve all the Data required to update a number of tables. To begin with I will focus on the Players (element), Teams, and Gameweeks items, as these all come from the same end point and are processed in the same file it makes sense to update these all together.
+
+We need to capture, what time the update ran, which item the change occurred in,
+which key's value changed, and how many instances were affected by this change occurred during the current update.
+
+After running this for a while I should be able to optimise the scheduler 
+so that the process isn't running to frequently, while also ensuring the Data
+is as fresh as is necessary.

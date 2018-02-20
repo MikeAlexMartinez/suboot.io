@@ -62,6 +62,14 @@ const gameweek = {
     type: Sequelize.STRING(12),
     allowNull: false,
   },
+  createdAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date()
+  },
+  updatedAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date()
+  }
 };
 
 module.exports = gameweek;

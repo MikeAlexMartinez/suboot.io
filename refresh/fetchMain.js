@@ -7,9 +7,10 @@ const async = require('async');
 
 // Models and DB
 const db = require('../db/connect');
-const { Players, Teams } = require('../db/Models');
+const { Players, Teams, Gameweeks } = require('../db/Models');
 const playerDef = require('../db/models/players');
 const teamDef = require('../db/models/teams');
+const gameweekDef = require('../db/models/gameweeks');
 
 // API
 const fetchFromAPI = require('./fetchFromAPI');
@@ -18,15 +19,24 @@ const MAIN = 'https://fantasy.premierleague.com/drf/bootstrap-static';
 // global variabale to store data retrieved from API
 let data;
 
+/*
+  ##########################
+  # MAIN FILE PROCESS HERE #
+  ##########################
+*/
+
 getMainData()
-  /*.then(() => {
+  .then(() => {
     // update the players table
     return manageModelUpdate('players', playerDef, Players, insertPlayerData);
-  })*/
+  })
   .then(() => {
-
     // update the teams table
     return manageModelUpdate('teams', teamDef, Teams, insertTeamData);
+  })
+  .then(() => {
+    // update the Gameweeks table
+    return manageModelUpdate('gameweeks', gameweekDef, Gameweeks, insertGameweekData);
   })
   .then(() => {
     console.log('UPDATE COMPLETE');
@@ -38,7 +48,8 @@ getMainData()
     
     process.exit(1);
   });
-  
+
+
 /**
  * Hit API at MAIN data source.
  */
@@ -74,7 +85,8 @@ function manageModelUpdate(model, modelDef, Model, fn) {
       .then((obj) => {
         console.log(obj);
     
-        // Now that the table exists we can insert players
+        // Now that the table exists we can insert items using function
+        // models and data provided.
         return fn(data[model], Model);
       })
       .then(({ updates, errors, noChange}) => {
@@ -242,6 +254,53 @@ function transformTeam(team) {
   console.log(newTeam);
   return newTeam;
 }
+
+/*
+  ########################################
+  #                                      #
+  #  Gameweeks model Specific functions  #
+  #                                      #
+  ########################################
+*/
+
+/**
+ * Takes an array of Gameweek items, and initiates batchInsert process 
+ * with the necessary transform.
+ * @param {array} gameweeks 
+ */
+function insertGameweekData(gameweek) {
+  return new Promise((res, rej) => {
+
+    // adds Model and transfrom function before processing as batch
+    batchInsert(gameweek, Gameweeks, transformGameweek)
+      .then(result => res(result))
+      .catch(err => rej(err));
+
+  });  
+}
+/**
+ * takes a player item and transforms it to conform with 
+ * Players data Model
+ * @param {object} gameweek
+ */
+function transformGameweek(gameweek) {
+  
+  let newGameweek = Object.assign({}, gameweek);
+
+  // Convert date field
+  newGameweek.deadline_time = new Date(newGameweek.deadline_time);
+
+  return newGameweek;
+}
+
+
+/*
+  ########################################
+  #                                      #
+  #   Insert Clean Items into DB Table   #
+  #                                      #
+  ########################################
+*/
 
 /**
  * Takes data and inserts into db using given model, transforming data
