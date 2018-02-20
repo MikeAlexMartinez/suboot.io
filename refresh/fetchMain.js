@@ -7,8 +7,9 @@ const async = require('async');
 
 // Models and DB
 const db = require('../db/connect');
-const { Players } = require('../db/Models');
+const { Players, Teams } = require('../db/Models');
 const playerDef = require('../db/models/players');
+const teamDef = require('../db/models/teams');
 
 // API
 const fetchFromAPI = require('./fetchFromAPI');
@@ -18,9 +19,14 @@ const MAIN = 'https://fantasy.premierleague.com/drf/bootstrap-static';
 let data;
 
 getMainData()
-  .then(() => {
-    // check and create the players table
+  /*.then(() => {
+    // update the players table
     return manageModelUpdate('players', playerDef, Players, insertPlayerData);
+  })*/
+  .then(() => {
+
+    // update the teams table
+    return manageModelUpdate('teams', teamDef, Teams, insertTeamData);
   })
   .then(() => {
     console.log('UPDATE COMPLETE');
@@ -195,6 +201,46 @@ function transformPlayer(player) {
   newPlayer.news_added = new Date(player.news_added);
 
   return newPlayer;
+}
+
+/*
+  ######################################
+  #                                    #
+  #   Teams model Specific functions   #
+  #                                    #
+  ######################################
+*/
+
+/**
+ * Takes an array of player items, and initiates batchInsert process 
+ * with necessary transform.
+ * @param {array} teams
+ */
+function insertTeamData(teams) {
+  return new Promise((res, rej) => {
+
+    // adds Model and transfrom function before processing as batch
+    batchInsert(teams, Teams, transformTeam)
+      .then(result => res(result))
+      .catch(err => rej(err));
+
+  });  
+}
+/**
+ * takes a player item and transforms it to conform with 
+ * Players data Model
+ * @param {object} team 
+ */
+function transformTeam(team) {
+  let newTeam = Object.assign({}, team);
+
+  console.log(team);
+
+  newTeam.current_event_fixture = team.current_event_fixture.map(v => v.id);
+  newTeam.next_event_fixture = team.next_event_fixture.map(v => v.id);
+
+  console.log(newTeam);
+  return newTeam;
 }
 
 /**

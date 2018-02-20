@@ -15,16 +15,16 @@ const Team = {
     allowNull: false,
   },
   current_event_fixture: {
-    type: Sequelize.SMALLINT,
-    allowNull: false,
+    type: Sequelize.ARRAY(Sequelize.SMALLINT),
+    allowNull: true,
   },
   name: {
     type: Sequelize.STRING(35),
     allowNull: false,
   },
   next_event_fixture: {
-    type: Sequelize.SMALLINT,
-    allowNull: false,
+    type: Sequelize.ARRAY(Sequelize.SMALLINT),
+    allowNull: true,
   },
   short_name: {
     type: Sequelize.STRING(3),
@@ -66,6 +66,14 @@ const Team = {
     type: Sequelize.BOOLEAN,
     allowNull: false,
   },
+  createdAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date()
+  },
+  updatedAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date()
+  }
 };
 
 module.exports = Team;
