@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 const async = require('async');
 
@@ -9,8 +9,8 @@ let q  = async.queue(function(val, callback) {
     
     setTimeout(function(){
         end.push(val);
-        callback(null, "Pushed " + val);
-    }, 1000)
+        callback(null, 'Pushed ' + val);
+    }, 1000);
     
 }, 1);
 
@@ -23,5 +23,5 @@ q.push(arr, function(err, message) {
         console.log(err);
     }
     console.log(message);
-    console.log("finished processing item");
+    console.log('finished processing item');
 });

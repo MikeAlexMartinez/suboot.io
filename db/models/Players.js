@@ -81,7 +81,7 @@ const Player = {
     allowNull: false,
   },
   first_name: {
-    type: Sequelize.STRING(25),
+    type: Sequelize.STRING(50),
     allowNull: false,
   },
   form: {
@@ -134,7 +134,7 @@ const Player = {
   },
   news_added: {
     type: Sequelize.DATE,
-    allowNull: false,
+    defaultValue: new Date(2017,7,10)
   },
   now_cost: {
     type: Sequelize.SMALLINT,
@@ -165,7 +165,7 @@ const Player = {
     allowNull: false,
   },
   second_name: {
-    type: Sequelize.STRING(25),
+    type: Sequelize.STRING(50),
     allowNull: false,
   },
   selected_by_percent: {
@@ -178,7 +178,7 @@ const Player = {
   },
   squad_number: {
     type: Sequelize.SMALLINT,
-    allowNull: false,
+    allowNull: true,
   },
   status: {
     type: Sequelize.STRING(1),
@@ -225,7 +225,7 @@ const Player = {
     allowNull: false,
   },
   web_name: {
-    type: Sequelize.STRING(25),
+    type: Sequelize.STRING(50),
     allowNull: false,
   },
   yellow_cards: {

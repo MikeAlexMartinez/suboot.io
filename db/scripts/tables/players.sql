@@ -37,7 +37,8 @@ CREATE TABLE players(
   loans_out	SMALLINT NOT NULL,
   minutes	SMALLINT NOT NULL,
   news	TEXT NOT NULL,
-  news_added	TIMESTAMP NOT NULL,
+  news_added	TIMESTAMPTZ 
+              DEFAULT CURRENT_TIMESTAMP,
   now_cost	SMALLINT NOT NULL,
   own_goals	SMALLINT NOT NULL,
   penalties_missed	SMALLINT NOT NULL,
@@ -54,10 +55,14 @@ CREATE TABLE players(
   team_code	SMALLINT NOT NULL,
   threat	REAL NOT NULL,
   total_points	SMALLINT NOT NULL,
-  transfers_in	INTEGER NOT NULL,
-  transfers_in_event	INTEGER NOT NULL,
-  transfers_out	INTEGER NOT NULL,
-  transfers_out_event	INTEGER NOT NULL,
+  transfers_in	INTEGER 
+    DEFAULT 0,
+  transfers_in_event	INTEGER
+    DEFAULT 0,
+  transfers_out	INTEGER
+    DEFAULT 0,
+  transfers_out_event	INTEGER
+    DEFAULT 0,
   value_form	REAL NOT NULL,
   value_season	REAL NOT NULL,
   web_name	VARCHAR(25) NOT NULL,
