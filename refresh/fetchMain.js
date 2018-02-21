@@ -4,6 +4,7 @@
 
 // External libs
 const async = require('async');
+const deepEquals = require('fast-deep-equal');
 
 // Models and DB
 const db = require('../db/connect');
@@ -39,7 +40,7 @@ getMainData()
   .then(() => {
     // update the players table
     return manageModelUpdate('players', playerDef, Players, insertPlayerData);
-  })
+  })/*
   .then(() => {
     // update the teams table
     return manageModelUpdate('teams', teamDef, Teams, insertTeamData);
@@ -47,9 +48,6 @@ getMainData()
   .then(() => {
     // update the Gameweeks table
     return manageModelUpdate('gameweeks', gameweekDef, Gameweeks, insertGameweekData);
-  })/*
-  .then(() => {
-    
   })*/
   .then(() => {
     console.log('UPDATE COMPLETE');
@@ -100,7 +98,7 @@ function manageModelUpdate(model, modelDef, Model, fn) {
     
         // Now that the table exists we can insert items using function
         // models and data provided.
-        return fn(data[model], Model);
+        return fn(data[model].slice(0,10), Model);
       })
       .then(({ updates, errors, noChange}) => {
         console.log(`!! => Updated ${updates.length} Items. <= !!`);
@@ -427,22 +425,36 @@ function batchInsert(data, Model, fn) {
 function insertItem(item, Model) {
   return new Promise((res) => {
     let updated = 0;
+    let isNew = 0;
     let processed = 1;
-    
+
     // check for existence of player, update, or create
     Model.findOrCreate({ where: {id: item.id}, defaults: item })
       .then(([foundItem, status]) => {
-        
-        // if no changes where made
+
+        // player exists
         if (!status) {
-          console.log(`player ${foundItem.id} was NOT updated!`);
+          console.log(`item ${foundItem.id} was NOT updated!`);
+          
+          const { isChanged,  updatedItem } = compareItems(foundItem.dataValues, item);
+
+          // if isChanged update new item
+          if (isChanged) {
+            updated++;
+          }
+
+          // once updated store update in update header and detail
+
+          // return
+          res({ updated, processed, isNew, itemId: item.id });
         } else { 
           // else record that player was updated.
-          console.log(`player ${foundItem.id} was updated!`);
-          updated++;
+          console.log(`item ${foundItem.id} was updated!`);
+          isNew++;
+          
+          res({ updated, processed, isNew, itemId: item.id });
         }
         
-        res({ updated, processed, itemId: item.id });
 
       })
       .catch((err) => {
@@ -454,3 +466,31 @@ function insertItem(item, Model) {
       });
   });
 }
+
+/**
+ * compares two objects and returns whether the object has changed
+ * and an object of values that have changed.
+ * @param {object} previousItem - the values that the item currently has
+ * @param {object} newItem - the new values
+ * @returns {{ isChanged: boolean, updatedItem: object }}
+ */
+function compareItems(previousItem, newItem) {
+  let { createdAt, updatedAt, ...pI } = previousItem;
+  let updatedItem = {id: previousItem.id};
+  let isChanged = false;
+
+  // Check that the items have the same set of keys
+  if (!deepEquals()) {
+    
+  }
+
+  Object.keys(pI).forEach((v) => {
+    if (!deepEquals(pI[v], newItem[v])) {
+      updatedItem[v] = newItem[v];
+      isChanged = true;
+    } 
+  });
+
+  return { isChanged, updatedItem };
+}
+
