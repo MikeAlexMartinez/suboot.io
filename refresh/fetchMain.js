@@ -24,13 +24,16 @@ const fetchFromAPI = require('./fetchFromAPI');
 const MAIN = 'https://fantasy.premierleague.com/drf/bootstrap-static';
 
 // global variabale to store data retrieved from API
+const TIMEOFUPDATE = new Date();
 let data;
+let logs = [];
 
 /*
   ##########################
   # MAIN FILE PROCESS HERE #
   ##########################
 */
+console.log(TIMEOFUPDATE.toISOString());
 
 getMainData()
   .then(() => {
@@ -40,7 +43,7 @@ getMainData()
   .then(() => {
     // update the players table
     return manageModelUpdate('players', playerDef, Players, insertPlayerData);
-  })/*
+  })
   .then(() => {
     // update the teams table
     return manageModelUpdate('teams', teamDef, Teams, insertTeamData);
@@ -48,12 +51,11 @@ getMainData()
   .then(() => {
     // update the Gameweeks table
     return manageModelUpdate('gameweeks', gameweekDef, Gameweeks, insertGameweekData);
-  })*/
-  .then(() => {
-    console.log('UPDATE COMPLETE');
-
-    process.exit(0);
   })
+  .then(() => {
+    return printLogs();
+  })
+  .then(() => process.exit(0))
   .catch(err => {
     console.error(err);
     
@@ -93,22 +95,59 @@ function manageModelUpdate(model, modelDef, Model, fn) {
   return new Promise((res, rej) => {
     
     checkAndCreateTable(model, modelDef, Model)
-      .then((obj) => {
-        console.log(obj);
+      .then(() => {
+        // console.log(obj);
     
         // Now that the table exists we can insert items using function
         // models and data provided.
-        return fn(data[model].slice(0,10), Model);
+        return fn(data[model], Model);
       })
-      .then(({ updates, errors, noChange}) => {
-        console.log(`!! => Updated ${updates.length} Items. <= !!`);
-        console.log(`!! => ${noChange.length} items did not change. <= !!`);
-        console.log(`!! => ${errors.length} Errors Encountered! <= !!`);
-    
+      .then(({ updates, errors, noChange, isNew }) => {
+
+        logs.push({
+          name: model,
+          results: [
+            `!! => ${isNew.length} items were created. <= !!`,
+            `!! => ${updates.length} items were updated. <= !!`,
+            `!! => ${noChange.length} items did not change. <= !!`,
+            `!! => ${errors.length} Errors Encountered! <= !!`
+          ]
+        });
+
         res();
       })
       .catch(err => rej(err));
   });
+}
+
+/**
+ * prints all summary log items to screen after process has complete
+ */
+function printLogs() {
+  return new Promise((res, rej) => {
+
+    if (logs.length === 0) {
+
+      rej( new Error('No logs were created'));
+    } else {
+
+      logs.forEach(v => {
+        console.log(`=========== ${capitalise(v.name)} Summary ===========`);
+
+        v.results.forEach(r => {
+          console.log(r);
+        });
+
+        console.log('');
+      });
+      
+      res();
+    }
+  });
+}
+
+function capitalise(string) {
+  return string[0].toUpperCase() + string.substring(1);
 }
 
 /**
@@ -130,9 +169,10 @@ function checkAndCreateTable(model, modelDef, Model) {
             AND    c.relkind = 'r'    -- only tables ...(?)
           );`
         )
-        .spread((results, metadata) => {
+        .spread((results) => {
+
           // if rowCount greater than 0 table exists
-          if( metadata.rowCount > 0 ) {
+          if( results[0].exists ) {
             res({
               message: '=> Model defined, table already exists! <=',
               status: true
@@ -181,7 +221,6 @@ function checkAndCreateTable(model, modelDef, Model) {
     });
   }
 }
-
 
 /*
   ######################################
@@ -337,7 +376,6 @@ function transformGameweek(gameweek) {
   return newGameweek;
 }
 
-
 /*
   ########################################
   #                                      #
@@ -361,6 +399,7 @@ function batchInsert(data, Model, fn) {
     const updates = [];
     const errors = [];
     const noChange = [];
+    const isNew = [];
     
     // this defines what to do to each item in the queue
     const q = async.queue(function manageQ(item, cb) {
@@ -372,16 +411,16 @@ function batchInsert(data, Model, fn) {
         .then(({ updated, processed, itemId }) => { 
 
           if (updated === 1 ) {
-
             // has item been updated
             updates.push(itemId);
-
           } else if (processed === 1) {
             // has item been processed but not updated
             noChange.push(itemId);
-
+          } else if (isNew === 1) {
+            // Item is new
+            isNew.push(itemId);
           } else {
-            // item has an error
+            // item generated an error
             errors.push(itemId);
           }
           
@@ -401,7 +440,8 @@ function batchInsert(data, Model, fn) {
       res({
         updates,
         errors,
-        noChange
+        noChange,
+        isNew,
       });
     };
     
@@ -410,7 +450,7 @@ function batchInsert(data, Model, fn) {
       if (err) {
         console.log(`## Error processing ${item.id}!`);
       } else { 
-        console.log(`Successfully processed ${item.id}!`);
+        // console.log(`Successfully processed ${item.id}!`);
       }
     });
     
@@ -434,35 +474,55 @@ function insertItem(item, Model) {
 
         // player exists
         if (!status) {
-          console.log(`item ${foundItem.id} was NOT updated!`);
+          //console.log(`item ${foundItem.id} was NOT created!`);
           
           const { isChanged,  updatedItem } = compareItems(foundItem.dataValues, item);
 
           // if isChanged update new item
           if (isChanged) {
-            updated++;
+            
+            Model.update(updatedItem, {
+                where: {id: foundItem.id},
+              })
+              .then(([count, rows]) => {
+                updated++;  
+                // console.log(`item ${foundItem.id} WAS updated!`);
+
+
+                // once updated store update in update header and detail
+                return processUpdate(foundItem, updatedItem, Model.modelName);
+              })
+              .then(() => {
+                res({ updated, processed, isNew, itemId: item.id });
+              })
+              .catch((err) => {
+                console.error(err);
+                
+                res({ updated, processed: 0, isNew, itemId: item.id });
+              });
+
+          } else {
+ 
+            
+            //console.log(`item ${foundItem.id} was NOT updated!`);
+            // return
+            res({ updated, processed, isNew, itemId: item.id });
           }
-
-          // once updated store update in update header and detail
-
-          // return
-          res({ updated, processed, isNew, itemId: item.id });
         } else { 
           // else record that player was updated.
-          console.log(`item ${foundItem.id} was updated!`);
+          //console.log(`item ${foundItem.id} WAS created!`);
           isNew++;
           
           res({ updated, processed, isNew, itemId: item.id });
         }
         
-
       })
       .catch((err) => {
 
         // handle error but continue with rest of queue
         console.error(err);
         
-        res({ updated: 0, processed: 0, item: item.id });
+        res({ updated: 0, processed: 0, isNew: 0, item: item.id });
       });
   });
 }
@@ -479,12 +539,21 @@ function compareItems(previousItem, newItem) {
   let updatedItem = {id: previousItem.id};
   let isChanged = false;
 
+  const pKeys = Object.keys(pI);
+  const nKeys = Object.keys(newItem);
+
   // Check that the items have the same set of keys
-  if (!deepEquals()) {
-    
+  if (nKeys.length !== pKeys.length) {
+
+    // find missing keys
+    const missingKeys = compareShallowArrays(pKeys, nKeys);
+
+    // log missing keys to be added in later.
+    console.log(missingKeys);
   }
 
-  Object.keys(pI).forEach((v) => {
+  // compare each item
+  pKeys.forEach((v) => {
     if (!deepEquals(pI[v], newItem[v])) {
       updatedItem[v] = newItem[v];
       isChanged = true;
@@ -494,3 +563,57 @@ function compareItems(previousItem, newItem) {
   return { isChanged, updatedItem };
 }
 
+/**
+ * Takes two arrays scalar (not nested) arrays and returns unique values 
+ * from each array as a nested array 
+ * @param {array} arrA 
+ * @param {array} arrB
+ * @return {array.array} 
+ */
+function compareShallowArrays(arrA, arrB) {
+
+  const filteredA = arrA.filter((v) => {
+    return arrB.indexOf(v) === -1;
+  });
+
+  const filteredB = arrB.filter((v) => {
+    return arrA.indexOf(v) === -1;
+  });
+
+  return [filteredA, filteredB];
+}
+
+/*
+  ########################################
+  #                                      #
+  #           Process Updates            #
+  #                                      #
+  ########################################
+*/
+
+function processUpdate(previousItem, updatedItem, name) {
+  return new Promise((res, rej) => {
+    
+    Object.keys(updatedItem).forEach((key) => {
+
+      const header = {
+        time_of_update: TIMEOFUPDATE,
+        model: name,
+        key_updated: key
+      };
+    
+      // check if this key has been updated during this
+      // update process
+        // If so increment occurences
+        // else
+        // create new header entry
+  
+        // create detail item using id of header element.
+    
+    
+    });
+
+    
+    res();
+  });
+}

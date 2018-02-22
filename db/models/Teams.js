@@ -73,6 +73,38 @@ const Team = {
   updatedAt: {
     type: Sequelize.DATE,
     defaultValue: new Date()
+  },
+  position: {
+    type: Sequelize.SMALLINT,
+    allowNull: true,
+  },
+  played: {
+    type: Sequelize.SMALLINT,
+    allowNull: true,
+  },
+  win: {
+    type: Sequelize.SMALLINT,
+    allowNull: true,
+  },
+  loss: {
+    type: Sequelize.SMALLINT,
+    allowNull: true,
+  },
+  draw: {
+    type: Sequelize.SMALLINT,
+    allowNull: true,
+  },
+  points: {
+    type: Sequelize.SMALLINT,
+    allowNull: true,
+  },
+  form: {
+    type: Sequelize.SMALLINT,
+    allowNull: true,
+  },
+  link_url: {
+    type: Sequelize.TEXT,
+    allowNull: true,
   }
 };
 

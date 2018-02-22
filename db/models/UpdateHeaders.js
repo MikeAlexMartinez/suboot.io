@@ -12,6 +12,7 @@ const UpdateHeaders = {
   time_of_update: {
     type: Sequelize.DATE,
     allowNull: false,
+    unique: true,
     defaultValue: new Date(),
   },
   model: {

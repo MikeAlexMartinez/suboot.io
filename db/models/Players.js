@@ -144,6 +144,10 @@ const Player = {
     type: Sequelize.SMALLINT,
     allowNull: false,
   },
+  penalties_saved: {
+    type: Sequelize.SMALLINT,
+    allowNull: false,
+  },
   penalties_missed: {
     type: Sequelize.SMALLINT,
     allowNull: false,
