@@ -1,26 +1,25 @@
-/*jshint camelcase: false */
 'use strict';
 
 const Sequelize = require('sequelize');
 
-const scoringItem = {
+const statItem = {
   id: {
     type: Sequelize.INTEGER,
     primaryKey: true,
     autoIncrement: true,
   },
-  scoring_item_name: {
+  stat_item_name: {
     type: Sequelize.STRING(50),
     allowNull: false,
   },
-  scoring_item_is_general: {
+  stat_item_is_general: {
     type: Sequelize.BOOLEAN,
     allowNull: false,
   },
-  scoring_item_type: {
+  stat_item_type: {
     type: Sequelize.STRING(6),
     allowNull: false,
   },
 };
 
-module.exports = scoringItem;
+module.exports = statItem;

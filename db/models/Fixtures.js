@@ -1,4 +1,3 @@
-/*jshint camelcase: false */
 'use strict';
 
 const Sequelize = require('sequelize');
@@ -72,7 +71,15 @@ const Fixture = {
   team_h_score: {
     type: Sequelize.SMALLINT,
     allowNull: false,
-  }
+  },
+  createdAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+  },
+  updatedAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+  },
 };
 
 module.exports = Fixture;

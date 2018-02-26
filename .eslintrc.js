@@ -1,11 +1,12 @@
 module.exports = {
     "extends": "google",
     "parserOptions": {
-        "ecmaVersion": 6
+        "ecmaVersion": 6,
+        "ecmaFeatures": {
+            "experimentalObjectRestSpread": true
+        }
     },
     "rules": {
-        "new-cap": {
-            "capIsNew": false,
-        },
-    },
+        "new-cap": ["error", { "capIsNew": false }] 
+    }
 };

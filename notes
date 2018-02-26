@@ -23,3 +23,16 @@ is as fresh as is necessary.
 
 After creating the two tables, one should be able to validate the number
 of entries in the detail table against the header table occurences value.
+
+## Refresh Routines
+
+### fetchMain: Hits main API
+
+This is the most frequently hit API. It contains data concerning player ownership
+and this changes on an ongoing basis.
+
+General data concerning Gameweeks, Teams and Players is at this end point and so it makes sense to verify whether any of these fields have changed and which ones,
+each time you hit the end point, as the amount of API calls we make is the main bottleneck of the dataloading application.
+
+### fetchFixturesAndPlayer Detail
+

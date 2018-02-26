@@ -131,7 +131,10 @@ function fetchPlayerDetail(id) {
     });
 }
 
-// function to fetch player header data from database
+/**
+ * function to fetch player header data from database
+ * @return {*}
+ */
 function fetchPlayerHeaders() {
     return new Promise((resolve, reject) => {
         var collection = 'player_header';
@@ -153,11 +156,15 @@ function fetchPlayerHeaders() {
     });
 }
 
-// This code retrieves main data from the main data API.
+/**
+ * This code retrieves main data from the main data API.
+ * @param {*} MAIN_DATA
+ * @return {*} 
+ */
 function getMainData(MAIN_DATA) {
     return new Promise((resolve, reject) => {
         api(MAIN_DATA)
-            .then(function(data){
+            .then(function(data) {
 
                 // splits data from API into component parts
                 // and saves into respective collections.
@@ -197,7 +204,7 @@ function getMainData(MAIN_DATA) {
                         reject(err);
                     });
             })
-            .catch(function(err){
+            .catch(function(err) {
                 console.error("ERROR ENCOUNTERED: ", err);
                 reject("ERROR encountered: ", err);
             });
