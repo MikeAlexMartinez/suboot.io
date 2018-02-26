@@ -1,5 +1,3 @@
-/*jshint camelcase: false */
-
 'use strict';
 
 // External libs
@@ -487,10 +485,9 @@ function insertItem(item, Model) {
               .then(([count, rows]) => {
                 updated++;  
                 // console.log(`item ${foundItem.id} WAS updated!`);
-
-
+                
                 // once updated store update in update header and detail
-                return processUpdate(foundItem, updatedItem, Model.modelName);
+                return processUpdate(foundItem, updatedItem, Model.getTableName());
               })
               .then(() => {
                 res({ updated, processed, isNew, itemId: item.id });
@@ -534,7 +531,7 @@ function insertItem(item, Model) {
  * @param {object} newItem - the new values
  * @returns {{ isChanged: boolean, updatedItem: object }}
  */
-function compareItems(previousItem, newItem) {
+function compareItems( previousItem, newItem) {
   let { createdAt, updatedAt, ...pI } = previousItem;
   let updatedItem = {id: previousItem.id};
   let isChanged = false;
@@ -594,26 +591,104 @@ function compareShallowArrays(arrA, arrB) {
 function processUpdate(previousItem, updatedItem, name) {
   return new Promise((res, rej) => {
     
-    Object.keys(updatedItem).forEach((key) => {
+    const { id, ...upItem } = updatedItem;
+    const updatedKeys = Object.keys(upItem);
+    
+    // this defines what to do to each item in the queue
+    const updateQ = async.queue(function manageUpdateQ(key, cb) {
 
       const header = {
         time_of_update: TIMEOFUPDATE,
         model: name,
         key_updated: key
       };
-    
+
       // check if this key has been updated during this
       // update process
-        // If so increment occurences
-        // else
-        // create new header entry
+      UpdateHeaders.findOrCreate({ where: header, defaults: { ...header, occurences: 1 } })
+        .then(([foundItem, status]) => {
+        
+          // items exists
+          if (!status) {
   
-        // create detail item using id of header element.
+            // If so increment occurences
+            foundItem.increment('occurences', {by: 1})
+              .then(() => {
+
+                // Then create detail entry
+                return createUpdateDetail(foundItem, previousItem[key], updatedItem[key], name, id);
+              })
+              .then(() => {
+                cb(null);
+              })
+              .catch((err) => {
+                cb(err, foundItem);
+              });
+  
+          } else {
+
+            // create detail entry
+            createUpdateDetail(foundItem, previousItem[key], updatedItem[key], name, id)
+              .then(() => {
+                cb(null);
+              })
+              .catch((err) => {
+                cb(err, foundItem);
+              });
+              
+          }
+  
+        })
+        .catch((err) => cb(err, 0));
+
+    }, 1);
     
+    // This runs after all items are processed
+    updateQ.drain = function updateQueueFinished() {
+      res();
+    };
     
+    // This runs after each item has been processed
+    updateQ.push(updatedKeys, function processItem(err, item) {
+      if (err) {
+        console.error(err);
+        // console.log(`## Error processing ${item.id}!`);
+      } else { 
+        // console.log(`Successfully added header ${item.id}!`);
+      }
     });
 
+  });
+}
+
+function createUpdateDetail(foundItem, prevVal, updatedVal, name, itemId) {
+  return new Promise((res, rej) => {
+    // All value stored in these columns as strings.
+    const newVal = updatedVal.toString(); 
+    const oldVal = prevVal.toString(); 
+    let diff;
+
+    // diff is a number, and so only provide value if values are numbers.
+    if (typeof prevVal === 'number' || typeof updatedVal === 'number') {
+      diff = updatedVal - prevVal;
+    }
     
-    res();
+    const updatedDetails = {
+      header_id: foundItem.id,
+      model: name,
+      item_id: itemId,
+      new_val: newVal,
+      old_val: oldVal,
+      difference: diff
+    };
+
+    UpdateDetails.create(updatedDetails, {returning: true})
+      .then((...args) => {
+        res(null);
+      })
+      .catch((err) => {
+        rej(err);
+      });
+
   });
 }

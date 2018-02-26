@@ -1,4 +1,3 @@
-/*jshint camelcase: false */
 'use strict';
 
 const Sequelize = require('sequelize');
@@ -12,7 +11,6 @@ const UpdateHeaders = {
   time_of_update: {
     type: Sequelize.DATE,
     allowNull: false,
-    unique: true,
     defaultValue: new Date(),
   },
   model: {
@@ -27,9 +25,17 @@ const UpdateHeaders = {
     type: Sequelize.SMALLINT,
     allowNull: false,
     validate: {
-      min: 1
-    }
-  }
+      min: 1,
+    },
+  },
+  createdAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+  },
+  updatedAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+  },
 };
 
 module.exports = UpdateHeaders;
