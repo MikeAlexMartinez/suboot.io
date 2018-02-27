@@ -1,4 +1,3 @@
-/*jshint camelcase: false */
 'use strict';
 
 const Sequelize = require('sequelize');
@@ -134,7 +133,7 @@ const Player = {
   },
   news_added: {
     type: Sequelize.DATE,
-    defaultValue: new Date(2017,7,10)
+    defaultValue: new Date(2017, 7, 10),
   },
   now_cost: {
     type: Sequelize.SMALLINT,
@@ -238,12 +237,12 @@ const Player = {
   },
   createdAt: {
     type: Sequelize.DATE,
-    defaultValue: new Date()
+    defaultValue: new Date(),
   },
   updatedAt: {
     type: Sequelize.DATE,
-    defaultValue: new Date()
-  }
+    defaultValue: new Date(),
+  },
 };
 
 module.exports = Player;

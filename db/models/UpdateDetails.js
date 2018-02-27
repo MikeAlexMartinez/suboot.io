@@ -1,4 +1,3 @@
-/*jshint camelcase: false */
 'use strict';
 
 const Sequelize = require('sequelize');
@@ -31,16 +30,16 @@ const UpdateDetails = {
   },
   difference: {
     type: Sequelize.REAL,
-    allowNull: true
+    allowNull: true,
   },
   createdAt: {
     type: Sequelize.DATE,
-    defaultValue: new Date()
+    defaultValue: new Date(),
   },
   updatedAt: {
     type: Sequelize.DATE,
-    defaultValue: new Date()
-  }
+    defaultValue: new Date(),
+  },
 };
 
 module.exports = UpdateDetails;

@@ -1,4 +1,3 @@
-/*jshint camelcase: false */
 'use strict';
 
 const Sequelize = require('sequelize');
@@ -64,12 +63,12 @@ const gameweek = {
   },
   createdAt: {
     type: Sequelize.DATE,
-    defaultValue: new Date()
+    defaultValue: new Date(),
   },
   updatedAt: {
     type: Sequelize.DATE,
-    defaultValue: new Date()
-  }
+    defaultValue: new Date(),
+  },
 };
 
 module.exports = gameweek;

@@ -30,10 +30,29 @@ const {manageModelUpdate,
   checkAndCreateTable} = require('./helpers/modelUpdates');
 const {printLogs} = require('./helpers/logs');
 const {batchInsert} = require('./helpers/insert');
+const {constructSimpleNumberArray} = require('./helpers/general');
   
 // API
 const fetchFromAPI = require('./fetchFromAPI');
 const eventUri = 'https://fantasy.premierleague.com/drf/event/';
+
+// global
+
+// data
+let data = {
+  fixtures: [],
+  players: [],
+};
+
+const args = process.argv;
+
+// if file called specifically run from within
+if (path.parse(args[1]).name === 'fetchEvents' ) {
+  fetchEventsData(1, 38);
+}
+// else functionality is exported to be used in the
+// application scheduler
+
 
 /**
  * fetches all the events data from the 'start' gameweek to the 'finish'
@@ -44,6 +63,9 @@ const eventUri = 'https://fantasy.premierleague.com/drf/event/';
  */
 function fetchEventsData(start, finish) {
   return new Promise((res, rej) => {
+    const gameweeksArray = constructSimpleNumberArray(start, finish);
 
+    console.log(gameweeksArray);
+    rej();
   });
 }

@@ -1,4 +1,3 @@
-/*jshint camelcase: false */
 'use strict';
 
 const Sequelize = require('sequelize');

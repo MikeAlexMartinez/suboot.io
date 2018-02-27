@@ -1,4 +1,3 @@
-/*jshint camelcase: false */
 'use strict';
 
 const Sequelize = require('sequelize');
@@ -28,7 +27,7 @@ const playerType = {
     type: Sequelize.STRING(3),
     unique: true,
     allowNull: false,
-  }
+  },
 };
 
 module.exports = playerType;

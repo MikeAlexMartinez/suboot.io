@@ -1,4 +1,3 @@
-/*jshint camelcase: false */
 'use strict';
 
 const Sequelize = require('sequelize');
@@ -68,11 +67,11 @@ const Team = {
   },
   createdAt: {
     type: Sequelize.DATE,
-    defaultValue: new Date()
+    defaultValue: new Date(),
   },
   updatedAt: {
     type: Sequelize.DATE,
-    defaultValue: new Date()
+    defaultValue: new Date(),
   },
   position: {
     type: Sequelize.SMALLINT,
@@ -105,7 +104,7 @@ const Team = {
   link_url: {
     type: Sequelize.TEXT,
     allowNull: true,
-  }
+  },
 };
 
 module.exports = Team;

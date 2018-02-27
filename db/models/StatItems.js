@@ -20,6 +20,14 @@ const statItem = {
     type: Sequelize.STRING(6),
     allowNull: false,
   },
+  createdAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+  },
+  updatedAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+  },
 };
 
 module.exports = statItem;

@@ -1,4 +1,3 @@
-/*jshint camelcase: false */
 'use strict';
 
 const Sequelize = require('sequelize');
@@ -32,7 +31,7 @@ const scoringSystem = {
   position: {
     type: Sequelize.STRING(3),
     allowNull: false,
-  }
+  },
 };
 
 module.exports = scoringSystem;
