@@ -2,7 +2,7 @@
 
 const Sequelize = require('sequelize');
 
-const scoringItem = {
+const pointsItem = {
   id: {
     type: Sequelize.INTEGER,
     primaryKey: true,
@@ -30,4 +30,4 @@ const scoringItem = {
   },
 };
 
-module.exports = scoringItem;
+module.exports = pointsItem;

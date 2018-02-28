@@ -8,6 +8,10 @@ const Fixture = {
     primaryKey: true,
     autoIncrement: true,
   },
+  gameweek_id: {
+    type: Sequelize.SMALLINT,
+    allowNull: false,
+  },
   code: {
     type: Sequelize.INTEGER,
     allowNull: false,
@@ -40,7 +44,7 @@ const Fixture = {
     type: Sequelize.DATE,
     allowNull: false,
   },
-  kickoff_time_provisional: {
+  kickoff_time_formatted: {
     type: Sequelize.STRING(15),
     allowNull: false,
   },
@@ -62,7 +66,7 @@ const Fixture = {
   },
   team_a_score: {
     type: Sequelize.SMALLINT,
-    allowNull: false,
+    allowNull: true,
   },
   team_h: {
     type: Sequelize.SMALLINT,
@@ -70,7 +74,7 @@ const Fixture = {
   },
   team_h_score: {
     type: Sequelize.SMALLINT,
-    allowNull: false,
+    allowNull: true,
   },
   createdAt: {
     type: Sequelize.DATE,

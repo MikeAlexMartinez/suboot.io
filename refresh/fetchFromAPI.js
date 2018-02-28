@@ -29,10 +29,10 @@ function fetchFromAPI(uri, qS) {
 
     // hit API
     rp(options)
-      .then(function success() {
+      .then(function success(data) {
         return resolve(data);
       })
-      .catch(function error() {
+      .catch(function error(err) {
         return reject(err);
       });
   });

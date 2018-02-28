@@ -11,8 +11,8 @@ const sequelize = new Sequelize('subootio', 'postgres', 'fJidCNPA1A', {
     max: 500,
     min: 0,
     acquire: 30000,
-    idle: 10000
-  }
+    idle: 10000,
+  },
 });
 
 module.exports = sequelize;

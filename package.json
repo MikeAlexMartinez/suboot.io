@@ -16,8 +16,10 @@
     "async": "^2.4.1",
     "decamelize": "^2.0.0",
     "fast-deep-equal": "^1.0.0",
+    "log-update": "^2.3.0",
     "pg": "^7.4.1",
     "pg-hstore": "^2.3.2",
+    "progress": "^2.0.0",
     "request": "^2.81.0",
     "request-promise": "^4.2.1",
     "sequelize": "^4.33.4"

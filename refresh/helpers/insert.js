@@ -32,7 +32,7 @@ function batchInsert(data, Model, fn) {
     const updates = [];
     const errors = [];
     const noChange = [];
-    const isNew = [];
+    const news = [];
 
     // this defines what to do to each item in the queue
     const q = async.queue(function manageQ(item, cb) {
@@ -40,16 +40,16 @@ function batchInsert(data, Model, fn) {
       const cleanItem = fn ? fn(item): item;
 
       insertItem(cleanItem, Model)
-        .then(({updated, processed, itemId}) => {
+        .then(({updated, processed, itemId, isNew}) => {
           if (updated === 1 ) {
             // has item been updated
             updates.push(itemId);
+          } else if (isNew === 1) {
+            // Item is new
+            news.push(itemId);
           } else if (processed === 1) {
             // has item been processed but not updated
             noChange.push(itemId);
-          } else if (isNew === 1) {
-            // Item is new
-            isNew.push(itemId);
           } else {
             // item generated an error
             errors.push(itemId);
@@ -70,13 +70,14 @@ function batchInsert(data, Model, fn) {
         updates,
         errors,
         noChange,
-        isNew,
+        news,
       });
     };
 
     // This runs after each item has been processed
     q.push(data, function processItem(err, item) {
       if (err) {
+        // console.log(item);
         console.log(`## Error processing ${item.id}!`);
       } else {
         // console.log(`Successfully processed ${item.id}!`);
@@ -100,9 +101,9 @@ function insertItem(item, Model) {
     // check for existence of player, update, or create
     Model.findOrCreate({where: {id: item.id}, defaults: item})
       .then(([foundItem, status]) => {
-        // player exists
+        // item exists
         if (!status) {
-          // console.log(`item ${foundItem.id} was NOT created!`)
+          // console.log(`item ${foundItem.id} was NOT created!`);
           const {isChanged,
             updatedItem} = compareItems(foundItem.dataValues, item);
 

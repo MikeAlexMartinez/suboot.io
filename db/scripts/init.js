@@ -5,8 +5,8 @@ const playerType = require('../models/PlayerType');
 const formation = require('../models/Formation');
 const bonusPointsSystem = require('../models/BonusPointsSystem');
 const phase = require('../models/Phase');
-const statItem = require('../models/StatItem');
-const scoringItem = require('../models/ScoringItem');
+const statsItems = require('../models/StatsItems');
+const pointsItems = require('../models/PointsItems');
 const scoringSystem = require('../models/ScoringSystem');
 
 const db = require('../connect');
@@ -50,10 +50,10 @@ db
     return createAndSeedModel('phase', phase, data.phase);
   })
   .then(() => {
-    return createAndSeedModel('stat_item', statItem, data.statItem);
+    return createAndSeedModel('stats_item', statsItems, data.statsItems);
   })
   .then(() => {
-    return createAndSeedModel('scoring_item', scoringItem, data.scoringItem);
+    return createAndSeedModel('points_item', pointsItems, data.pointsItems);
   })
   .then(() => {
     return createAndSeedModel(

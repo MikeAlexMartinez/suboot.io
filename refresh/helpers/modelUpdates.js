@@ -24,11 +24,11 @@ function manageModelUpdate(db, model, modelDef, Model, fn, data) {
         // models and data provided.
         return fn(data[model], Model);
       })
-      .then(({updates, errors, noChange, isNew}) => {
+      .then(({updates, errors, noChange, news}) => {
         const log = {
           name: model,
           results: [
-            `!! => ${isNew.length} items were created. <= !!`,
+            `!! => ${news.length} items were created. <= !!`,
             `!! => ${updates.length} items were updated. <= !!`,
             `!! => ${noChange.length} items did not change. <= !!`,
             `!! => ${errors.length} Errors Encountered! <= !!`],
@@ -36,7 +36,10 @@ function manageModelUpdate(db, model, modelDef, Model, fn, data) {
 
         res(log);
       })
-      .catch((err) => rej(err));
+      .catch((err) => {
+        console.error(err);
+        rej(err);
+      });
   });
 }
 
@@ -78,6 +81,7 @@ function checkAndCreateTable(db, model, modelDef, Model) {
           res(obj);
         })
         .catch((err) => {
+          console.error(err);
           rej(err);
         });
     }

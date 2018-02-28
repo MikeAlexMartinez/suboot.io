@@ -549,7 +549,7 @@ module.exports = {
       stop_event: 38,
     },
   ],
-  statItem: [
+  statsItems: [
     {id: 1, stat_item_name: 'assists', stat_item_is_general: false, stat_item_type: 'attack'},
     {id: 2, stat_item_name: 'attempted_passes', stat_item_is_general: true, stat_item_type: 'normal'},
     {id: 3, stat_item_name: 'big_chances_created', stat_item_is_general: false, stat_item_type: 'attack'},
@@ -598,8 +598,9 @@ module.exports = {
     {id: 46, stat_item_name: 'opponent_team', stat_item_is_general: true, stat_item_type: 'normal'},
     {id: 47, stat_item_name: 'team_a_score', stat_item_is_general: true, stat_item_type: 'normal'},
     {id: 48, stat_item_name: 'team_h_score', stat_item_is_general: true, stat_item_type: 'normal'},
+    {id: 49, stat_item_name: 'in_dreamteam', stat_item_is_general: true, stat_item_type: 'normal'},
   ],
-  scoringItem: [
+  pointsItems: [
     {id: 1, scoring_item_name: 'assists', scoring_item_is_general: false, scoring_item_type: 'attack'},
     {id: 2, scoring_item_name: 'bonus', scoring_item_is_general: true, scoring_item_type: 'normal'},
     {id: 3, scoring_item_name: 'bps', scoring_item_is_general: true, scoring_item_type: 'normal'},
