@@ -52,82 +52,106 @@ const args = process.argv;
 
 let scoringItems = {};
 let statItems = {};
+let generalLogs = [];
 let data;
 
 // if file called specifically run from within
 if (path.parse(args[1]).name === 'fetchEvents' ) {
-  let generalLogs = [];
   let start = args[2] || 1;
   let end = args[3] || 38;
 
-  // Get data for gameweeks
-  fetchScoringAndStatItems()
+  fetchEvents(start, end)
     .then(() => {
-      // Now we have scoring and stat item ids stored
-      // in memory we can get on with the proper work.
-      return fetchEventsData(start, end);
+      process.exit(0);
     })
-    .then(({data: retrievedData, logs}) => {
-      // add to block scope data variable
-      data = retrievedData;
-
-      // print logs returned from fetchEventsData
-      printLogs(logs);
-
-      // set up and insert data for fixtures
-      return manageModelUpdate(
-        db,
-        'fixtures',
-        fixtureDef,
-        Fixtures,
-        insertFixturesData,
-        data
-      );
-    })
-    .then((log) => {
-      generalLogs.push(log);
-
-      console.log('starting scoring_points...');
-
-      // set up and insert scoring points data
-      return manageModelUpdate(
-        db,
-        'scoring_points',
-        scoringPointsDef,
-        ScoringPoints,
-        insertScoringPointsData,
-        data
-      );
-    })
-    .then((log) => {
-      generalLogs.push(log);
-
-      console.log('starting scoring_stats...');
-
-      // set up and insert scoring stats data
-      return manageModelUpdate(
-        db,
-        'scoring_stats',
-        scoringStatsDef,
-        ScoringStats,
-        insertScoringStatsData,
-        data
-      );
-    })
-    .then((log) => {
-      generalLogs.push(log);
-      // print summary of what has been processed
-      return printLogs(generalLogs);
-    })
-    // finish
-    .then(() => process.exit(0))
-    .catch((err) => {
-      console.error(err);
+    .catch(() => {
       process.exit(1);
     });
 }
 // else functionality is exported to be used in the
 // application scheduler
+module.exports = {
+  fetchEvents: fetchEvents,
+};
+
+/*
+  ######################################
+  #                                    #
+  #     fetchEvents main sequence      #
+  #                                    #
+  ######################################
+*/
+
+/**
+ * @param {number} start
+ * @param {number} end
+ * @return {promise}
+ */
+function fetchEvents(start=1, end=38) {
+  return new Promise((res, rej) => {
+    // Get data for gameweeks
+    fetchScoringAndStatItems()
+      .then(() => {
+        // Now we have scoring and stat item ids stored
+        // in memory we can get on with the proper work.
+        return fetchEventsData(start, end);
+      })
+      .then(({data: retrievedData, logs}) => {
+        // add to block scope data variable
+        data = retrievedData;
+
+        // print logs returned from fetchEventsData
+        printLogs(logs);
+
+        // set up and insert data for fixtures
+        return manageModelUpdate(
+          db,
+          'fixtures',
+          fixtureDef,
+          Fixtures,
+          insertFixturesData,
+          data
+        );
+      })
+      .then((log) => {
+        generalLogs.push(log);
+
+        // set up and insert scoring points data
+        return manageModelUpdate(
+          db,
+          'scoring_points',
+          scoringPointsDef,
+          ScoringPoints,
+          insertScoringPointsData,
+          data
+        );
+      })
+      .then((log) => {
+        generalLogs.push(log);
+
+        // set up and insert scoring stats data
+        return manageModelUpdate(
+          db,
+          'scoring_stats',
+          scoringStatsDef,
+          ScoringStats,
+          insertScoringStatsData,
+          data
+        );
+      })
+      .then((log) => {
+        generalLogs.push(log);
+        // print summary of what has been processed
+        return printLogs(generalLogs);
+      })
+      // finish
+      .then(() => res())
+      .catch((err) => {
+        console.error(err);
+        rej(err);
+      });
+  });
+}
 
 /*
   ######################################
