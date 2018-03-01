@@ -1,6 +1,8 @@
 'use strict';
 
 const async = require('async');
+const {Progress} = require('super-progress');
+const {EOL} = require('os');
 
 const {compareItems, processUpdate} = require('./updateTracking');
 
@@ -27,7 +29,23 @@ module.exports = {
  * @return {promise}
  */
 function batchInsert(data, Model, fn) {
+  console.log(
+    `Starting processing items for table ${Model.getTableName()}`
+  );
+
   return new Promise((res) => {
+    // prepare progress bar options
+    const pbOptions = {
+      total: data.length,
+      pattern: `[{spinner}] {bar} | Elapsed: {elapsed} | {percent}`,
+      renderInterval: 1,
+    };
+
+    const pb = Progress.create(
+      process.stdout.columns - Math.floor(process.stdout.columns*0.25),
+      pbOptions
+    );
+
     // capture and categorise the results of the data.
     const updates = [];
     const errors = [];
@@ -66,12 +84,19 @@ function batchInsert(data, Model, fn) {
 
     // This runs after all items are processed
     q.drain = function queueFinished() {
-      res({
-        updates,
-        errors,
-        noChange,
-        news,
-      });
+      pb.tick()
+        .then(() => {
+          process.stdout.write(EOL);
+          console.log(
+            `Finished processing items for table ${Model.getTableName()}`
+          );
+          res({
+            updates,
+            errors,
+            noChange,
+            news,
+          });
+        });
     };
 
     // This runs after each item has been processed
@@ -82,6 +107,9 @@ function batchInsert(data, Model, fn) {
       } else {
         // console.log(`Successfully processed ${item.id}!`);
       }
+
+      // add progress to the progress bar
+      pb.tick();
     });
   });
 }
