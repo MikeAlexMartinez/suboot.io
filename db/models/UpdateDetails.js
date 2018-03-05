@@ -9,7 +9,7 @@ const UpdateDetails = {
     autoIncrement: true,
   },
   header_id: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.STRING(100),
     allowNull: false,
   },
   model: {

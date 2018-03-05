@@ -4,6 +4,7 @@ module.exports = {
   capitalise,
   compareShallowArrays,
   constructSimpleNumberArray,
+  createDateId,
 };
 
 /**
@@ -46,4 +47,31 @@ function constructSimpleNumberArray(start, end) {
     arr.push(i);
   }
   return arr;
+}
+
+/**
+ * returns string from date in format "YYYY-MM-DD-HH:MM"
+ * @param {date} date
+ * @return {string}
+ */
+function createDateId(date) {
+  const year = date.getFullYear().toString();
+  const month = appendZero(date.getMonth() + 1);
+  const day = appendZero(date.getDate());
+  const hours = appendZero(date.getHours());
+  const minutes = appendZero(date.getMinutes());
+
+  return `${year}-${month}-${day}-${hours}:${minutes}`;
+}
+
+/**
+ * converts single digit number into two digits
+ * by prepending a 0 to the number provided
+ * @param {number} n
+ * @return {string}
+ */
+function appendZero(n) {
+  return n.toString().length < 2
+    ? `0${n}`
+    : n.toString();
 }

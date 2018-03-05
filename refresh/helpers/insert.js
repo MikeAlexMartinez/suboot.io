@@ -4,7 +4,7 @@ const async = require('async');
 const {Progress} = require('super-progress');
 const {EOL} = require('os');
 
-const {compareItems, processUpdate} = require('./updateTracking');
+const {compareItems, processUpdate, cleanNewItem} = require('./updateTracking');
 
 module.exports = {
   batchInsert,
@@ -126,14 +126,16 @@ function insertItem(item, Model) {
     let isNew = 0;
     let processed = 1;
 
+    let cleanItem = cleanNewItem(item);
+
     // check for existence of player, update, or create
-    Model.findOrCreate({where: {id: item.id}, defaults: item})
+    Model.findOrCreate({where: {id: cleanItem.id}, defaults: cleanItem})
       .then(([foundItem, status]) => {
         // item exists
         if (!status) {
           // console.log(`item ${foundItem.id} was NOT created!`);
           const {isChanged,
-            updatedItem} = compareItems(foundItem.dataValues, item);
+            updatedItem} = compareItems(foundItem.dataValues, cleanItem);
 
           // if isChanged update new item
           if (isChanged) {
@@ -150,28 +152,28 @@ function insertItem(item, Model) {
                 );
               })
               .then(() => {
-                res({updated, processed, isNew, itemId: item.id});
+                res({updated, processed, isNew, itemId: cleanItem.id});
               })
               .catch((err) => {
                 console.error(err);
-                res({updated, processed: 0, isNew, itemId: item.id});
+                res({updated, processed: 0, isNew, itemId: cleanItem.id});
               });
           } else {
             // console.log(`item ${foundItem.id} was NOT updated!`);
             // return
-            res({updated, processed, isNew, itemId: item.id});
+            res({updated, processed, isNew, itemId: cleanItem.id});
           }
         } else {
           // else record that player was updated.
           // console.log(`item ${foundItem.id} WAS created!`);
           isNew++;
-          res({updated, processed, isNew, itemId: item.id});
+          res({updated, processed, isNew, itemId: cleanItem.id});
         }
       })
       .catch((err) => {
         // handle error but continue with rest of queue
         console.error(err);
-        res({updated: 0, processed: 0, isNew: 0, item: item.id});
+        res({updated: 0, processed: 0, isNew: 0, item: cleanItem.id});
       });
   });
 }

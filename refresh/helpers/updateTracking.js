@@ -11,12 +11,37 @@ const deepEquals = require('fast-deep-equal');
 const {UpdateHeaders,
        UpdateDetails} = require('../../db/Models');
 
+const {createDateId} = require('./general');
+
 const TIMEOFUPDATE = new Date();
 
 module.exports = {
   compareItems,
   processUpdate,
+  cleanNewItem,
 };
+
+/**
+ * converts specified items to appropriate format
+ * @param {object} item
+ * @return {object}
+ */
+function cleanNewItem(item) {
+  const conversions = ['player_id', 'gameweek_id'];
+  let cleanItem = {};
+
+  let keys = Object.keys(item);
+
+  keys.forEach((key) => {
+    if (conversions.indexOf(key) !== -1) {
+      cleanItem[key] = parseInt(item[key]);
+    } else {
+      cleanItem[key] = item[key];
+    }
+  });
+
+  return cleanItem;
+}
 
 /**
  * compares two objects and returns whether the object has changed
@@ -75,7 +100,9 @@ function processUpdate(previousItem, updatedItem, name) {
 
     // this defines what to do to each item in the queue
     const updateQ = async.queue(function manageUpdateQ(key, cb) {
+      let headerId = `${createDateId(TIMEOFUPDATE)}-${name}-${key}`;
       const header = {
+        id: headerId,
         time_of_update: TIMEOFUPDATE,
         model: name,
         key_updated: key,
@@ -160,8 +187,8 @@ function processUpdate(previousItem, updatedItem, name) {
 function createUpdateDetail(foundItem, prevVal, updatedVal, name, itemId) {
   return new Promise((res, rej) => {
     // All value stored in these columns as strings.
-    const newVal = updatedVal.toString();
-    const oldVal = prevVal.toString();
+    const newVal = updatedVal ? updatedVal.toString() : 'null';
+    const oldVal = prevVal ? prevVal.toString() : 'null';
     let diff;
 
     // diff is a number, and so only provide value if values are numbers.

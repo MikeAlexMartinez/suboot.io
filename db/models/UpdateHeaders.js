@@ -4,9 +4,8 @@ const Sequelize = require('sequelize');
 
 const UpdateHeaders = {
   id: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.STRING(100),
     primaryKey: true,
-    autoIncrement: true,
   },
   time_of_update: {
     type: Sequelize.DATE,
@@ -22,7 +21,7 @@ const UpdateHeaders = {
     allowNull: false,
   },
   occurences: {
-    type: Sequelize.SMALLINT,
+    type: Sequelize.INTEGER,
     allowNull: false,
     validate: {
       min: 1,
