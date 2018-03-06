@@ -40,7 +40,7 @@ const playerFixtureStats = {
     allowNull: false,
   },
   stat_item_value: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.REAL,
     allowNull: false,
   },
   createdAt: {

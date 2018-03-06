@@ -14,13 +14,17 @@ const headerFields = {
  * uri and then return a json response or an error.
  * @param {string} uri
  * @param {string} qS
+ * @param {object} options - default true
  * @return {promise}
  */
-function fetchFromAPI(uri, qS) {
+function fetchFromAPI(uri, qS, {logging= true}) {
   return new Promise((resolve, reject) => {
-    console.log('Requesting: ' + uri);
+    if (logging) {
+      console.log('Requesting: ' + uri);
+    }
+
     // set options for request
-    const options = {
+    const rpOptions = {
       uri: uri,
       qs: qS || '',
       headers: headerFields,
@@ -28,7 +32,7 @@ function fetchFromAPI(uri, qS) {
     };
 
     // hit API
-    rp(options)
+    rp(rpOptions)
       .then(function success(data) {
         return resolve(data);
       })
