@@ -98,7 +98,7 @@ function fetchEvents(start=1, end=38) {
       })
       .then(({data: retrievedData, logs}) => {
         // add to block scope data variable
-        data = retrievedData;
+        const data = retrievedData;
 
         // print logs returned from fetchEventsData
         printLogs(logs);
@@ -222,9 +222,8 @@ function fetchEventsData(start, finish) {
       scoring_stats: [],
       scoring_points: [],
       fixtures: [],
+      logs: [],
     };
-
-    let logs = [];
 
     let errorCount = 0;
 
@@ -293,9 +292,9 @@ function fetchEventsData(start, finish) {
         results: logMessages,
       };
 
-      logs.push(totalLog);
+      data.logs.push(totalLog);
 
-      res({data, logs});
+      res({...data});
     };
 
     q.push(gameweeksArray,
@@ -311,7 +310,7 @@ function fetchEventsData(start, finish) {
           results: logMessages,
         };
 
-        logs.push(log);
+        data.logs.push(log);
     });
   });
 }
@@ -438,6 +437,32 @@ function insertFixturesData(fixtures) {
  */
 function transformFixture(fixture) {
   let newFixture = Object.assign({}, fixture);
+  let homePoints;
+  let awayPoints;
+  let result;
+
+  if (fixture.finished) {
+    let homeScore = fixture.team_h_score;
+    let awayScore = fixture.team_a_score;
+
+    if (homeScore === awayScore) {
+      homePoints = 1;
+      awayPoints = 1;
+      result = homeScore > 0 ? 'SD' : 'ND';
+    } else if (homeScore > awayScore) {
+      homePoints = 3;
+      awayPoints = 0;
+      result = 'HW';
+    } else {
+      homePoints = 0;
+      awayPoints = 3;
+      result = 'AW';
+    }
+
+    newFixture.team_h_points = homePoints;
+    newFixture.team_a_points = awayPoints;
+    newFixture.result = result;
+  }
 
   newFixture.deadline_time = new Date(fixture.deadline_time);
   newFixture.kickoff_time = new Date(fixture.kickoff_time);

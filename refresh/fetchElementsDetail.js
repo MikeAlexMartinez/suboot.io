@@ -31,6 +31,9 @@
    * - save.
    */
 
+// Could add code to fetch a range of players.
+// Or take an array to fetch a group of specified players.
+
 // Core Node Modules
 const path = require('path');
 
@@ -124,16 +127,11 @@ function fetchElementsDetail(target) {
         return processPlayerDetail(data);
       })
       .then((data) => {
-        let entries = data.detailEntries;
+        let entries = data.player_fixture_stats;
         console.log(
           `${entries.length} Data Entries Created ` +
           `for PlayerFixtureStats table`
         );
-
-        for (let i = 0; i < 5; i++) {
-          let id = Math.floor(Math.random() * (entries.length - 0)) + 0;
-          console.log(entries[id]);
-        }
 
         return manageModelUpdate(
           db,
@@ -141,7 +139,7 @@ function fetchElementsDetail(target) {
           playerFixtureStatsDef,
           PlayerFixtureStats,
           insertPlayerFixtureStats,
-          entries
+          data
         );
       })
       .then((log) => {
@@ -177,13 +175,11 @@ function insertPlayerFixtureStats(data) {
   });
 }
 
-
 /**
  * @param {number} player
  * @return {promise}
  */
 function fetchPlayers(player) {
-  console.log('fetchPlayers');
   return new Promise((res, rej) => {
     console.log('Fetching Players');
     let options = {
@@ -245,11 +241,9 @@ function processPlayerDetail(data) {
       'yellow_cards'];
 
     const detailEntries = [];
-
     const details = data.detail;
-
     const detailKeys = Object.keys(details);
-    console.log(detailKeys);
+
     // get specific player details
     detailKeys.forEach((playerId) => {
       const playerDetails = details[playerId];
@@ -311,7 +305,7 @@ function processPlayerDetail(data) {
       }
     });
 
-    res({...data, detailEntries});
+    res({...data, 'player_fixture_stats': detailEntries});
   });
 }
 

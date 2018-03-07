@@ -23,64 +23,88 @@ const {batchInsert} = require('./helpers/insert');
 const fetchFromAPI = require('./fetchFromAPI');
 const MAIN = 'https://fantasy.premierleague.com/drf/bootstrap-static';
 
-// global variable to store data retrieved from API
-const TIMEOFUPDATE = new Date();
-let data;
-let logs = [];
+// Globals
+const args = process.argv;
+
+// if file called specifically run from within
+if (path.parse(args[1]).name === 'fetchMain' ) {
+  fetchMain()
+    .then(() => {
+      console.log('exiting...');
+      process.exit(0);
+    })
+    .catch((err) => {
+      console.error(err);
+      process.exit(1);
+    });
+}
+// else functionality is exported to be used in the
+// application scheduler
+module.exports = {
+  fetchMain: fetchMain,
+};
 
 /*
   ##########################
   # MAIN FILE PROCESS HERE #
   ##########################
 */
-console.log(`Update starting: ${TIMEOFUPDATE.toISOString()} `);
 
-getMainData()
-  .then(() => {
-    // set up update tables
-    return generateUpdateTables();
-  })
-  .then(() => {
-    // update the players table
-    return manageModelUpdate(
-      db,
-      'players',
-      playerDef,
-      Players,
-      insertPlayerData,
-      data
-    );
-  })
-  .then((log) => {
-    logs.push(log);
-
-    // update the teams table
-    return manageModelUpdate(db, 'teams', teamDef, Teams, insertTeamData, data);
-  })
-  .then((log) => {
-    logs.push(log);
-
-    // update the Gameweeks table
-    return manageModelUpdate(
-      db,
-      'gameweeks',
-      gameweekDef,
-      Gameweeks,
-      insertGameweekData,
-      data
-    );
-  })
-  .then((log) => {
-    logs.push(log);
-
-    return printLogs(logs);
-  })
-  .then(() => process.exit(0))
-  .catch((err) => {
-    console.error(err);
-    process.exit(1);
+/**
+ * @return {promise}
+ */
+function fetchMain() {
+  return new Promise((res, rej) => {
+    const TIMEOFUPDATE = new Date();
+    console.log(`Update starting: ${TIMEOFUPDATE.toISOString()} `);
+    getMainData()
+      .then((data) => {
+        // set up update tables
+        return generateUpdateTables(data);
+      })
+      .then((data) => {
+        // update the players table
+        return manageModelUpdate(
+          db,
+          'players',
+          playerDef,
+          Players,
+          insertPlayerData,
+          data
+        );
+      })
+      .then((data) => {
+        // update the teams table
+        return manageModelUpdate(
+          db,
+          'teams',
+          teamDef,
+          Teams,
+          insertTeamData,
+          data
+        );
+      })
+      .then((data) => {
+        // update the Gameweeks table
+        return manageModelUpdate(
+          db,
+          'gameweeks',
+          gameweekDef,
+          Gameweeks,
+          insertGameweekData,
+          data
+        );
+      })
+      .then((data) => {
+        return printLogs(data);
+      })
+      .then((data) => process.exit(0))
+      .catch((err) => {
+        console.error(err);
+        process.exit(1);
+      });
   });
-
+};
 
 /*
   ######################################
@@ -99,12 +123,13 @@ function getMainData() {
     fetchFromAPI(MAIN)
       .then((d) => {
         // keep data for later
-        data = {
+        const data = {
           players: d.elements,
           teams: d.teams,
           gameweeks: d.events,
+          logs: [],
         };
-        res();
+        res(data);
       })
       .catch((err) => rej(err));
   });
@@ -120,9 +145,10 @@ function getMainData() {
 
 /**
  * This function generates the update tables if they don't exist
+ * @param {object} data
  * @return {promise}
  */
-function generateUpdateTables() {
+function generateUpdateTables(data) {
   return new Promise((res, rej) => {
     // create header table
     checkAndCreateTable(db, 'update_headers', updateHeaderDef, UpdateHeaders)
@@ -138,7 +164,8 @@ function generateUpdateTables() {
           {foreignKey: 'header_id', sourceKey: 'id'});
         UpdateDetails.belongsTo(UpdateHeaders,
           {foreignKey: 'header_id', targetKey: 'id'});
-        res();
+
+        res({...data});
       })
       .catch((err) => {
         rej(err);

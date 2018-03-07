@@ -64,6 +64,10 @@ const Fixture = {
     type: Sequelize.SMALLINT,
     allowNull: false,
   },
+  team_a_points: {
+    type: Sequelize.SMALLINT,
+    allowNull: true,
+  },
   team_a_score: {
     type: Sequelize.SMALLINT,
     allowNull: true,
@@ -72,8 +76,16 @@ const Fixture = {
     type: Sequelize.SMALLINT,
     allowNull: false,
   },
+  team_h_points: {
+    type: Sequelize.SMALLINT,
+    allowNull: true,
+  },
   team_h_score: {
     type: Sequelize.SMALLINT,
+    allowNull: true,
+  },
+  result: {
+    type: Sequelize.STRING(2),
     allowNull: true,
   },
   createdAt: {

@@ -34,5 +34,11 @@ and this changes on an ongoing basis.
 General data concerning Gameweeks, Teams and Players is at this end point and so it makes sense to verify whether any of these fields have changed and which ones,
 each time you hit the end point, as the amount of API calls we make is the main bottleneck of the dataloading application.
 
-### fetchFixturesAndPlayer Detail
+### fetchEvents: Hits API that was fixture and weekly player detail
+
+
+### fetchElementsDetail: Hits API for specific player
+
+
+
 

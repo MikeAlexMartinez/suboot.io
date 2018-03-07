@@ -34,7 +34,9 @@ function manageModelUpdate(db, model, modelDef, Model, fn, data) {
             `!! => ${errors.length} Errors Encountered! <= !!`],
         };
 
-        res(log);
+        data.logs.push(log);
+
+        res(data);
       })
       .catch((err) => {
         console.error(err);

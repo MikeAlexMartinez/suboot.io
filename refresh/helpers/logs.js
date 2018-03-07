@@ -8,10 +8,11 @@ module.exports = {
 
 /**
  * prints all summary log items to screen after process has complete
- * @param {object} logs
+ * @param {object} data
  * @return {promise}
  */
-function printLogs(logs) {
+function printLogs(data) {
+  const logs = data.logs;
   return new Promise((res, rej) => {
     if (logs.length === 0) {
       rej( new Error('No logs were created'));
@@ -26,7 +27,7 @@ function printLogs(logs) {
         console.log('');
       });
 
-      res();
+      res(data);
     }
   });
 }
