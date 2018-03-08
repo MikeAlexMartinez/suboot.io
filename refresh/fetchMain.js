@@ -1,5 +1,8 @@
 'use strict';
 
+// Core Node Modules
+const path = require('path');
+
 // Models and DB
 const db = require('../db/connect');
 const {Players,
@@ -120,7 +123,7 @@ function fetchMain() {
  */
 function getMainData() {
   return new Promise((res, rej) => {
-    fetchFromAPI(MAIN)
+    fetchFromAPI({uri: MAIN})
       .then((d) => {
         // keep data for later
         const data = {
@@ -165,7 +168,7 @@ function generateUpdateTables(data) {
         UpdateDetails.belongsTo(UpdateHeaders,
           {foreignKey: 'header_id', targetKey: 'id'});
 
-        res({...data});
+        res(data);
       })
       .catch((err) => {
         rej(err);

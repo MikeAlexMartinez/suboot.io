@@ -50,15 +50,14 @@ const eventUri = 'https://fantasy.premierleague.com/drf/event/';
 // Globals
 const args = process.argv;
 
-let scoringItems = {};
-let statItems = {};
-let generalLogs = [];
-let data;
-
 // if file called specifically run from within
 if (path.parse(args[1]).name === 'fetchEvents' ) {
   let start = args[2] || 1;
   let end = args[3] || 38;
+
+  process.on('unhandledRejection', (e) => {
+    console.error(e);
+  });
 
   fetchEvents(start, end)
     .then(() => {
@@ -91,17 +90,14 @@ function fetchEvents(start=1, end=38) {
   return new Promise((res, rej) => {
     // Get data for gameweeks
     fetchScoringAndStatItems()
-      .then(() => {
+      .then((data) => {
         // Now we have scoring and stat item ids stored
         // in memory we can get on with the proper work.
-        return fetchEventsData(start, end);
+        return fetchEventsData(start, end, data);
       })
-      .then(({data: retrievedData, logs}) => {
-        // add to block scope data variable
-        const data = retrievedData;
-
+      .then((data) => {
         // print logs returned from fetchEventsData
-        printLogs(logs);
+        printLogs(data);
 
         // set up and insert data for fixtures
         return manageModelUpdate(
@@ -113,9 +109,7 @@ function fetchEvents(start=1, end=38) {
           data
         );
       })
-      .then((log) => {
-        generalLogs.push(log);
-
+      .then((data) => {
         // set up and insert scoring points data
         return manageModelUpdate(
           db,
@@ -126,9 +120,7 @@ function fetchEvents(start=1, end=38) {
           data
         );
       })
-      .then((log) => {
-        generalLogs.push(log);
-
+      .then((data) => {
         // set up and insert scoring stats data
         return manageModelUpdate(
           db,
@@ -139,10 +131,9 @@ function fetchEvents(start=1, end=38) {
           data
         );
       })
-      .then((log) => {
-        generalLogs.push(log);
+      .then((data) => {
         // print summary of what has been processed
-        return printLogs(generalLogs);
+        return printLogs(data);
       })
       // finish
       .then(() => res())
@@ -167,6 +158,12 @@ function fetchEvents(start=1, end=38) {
  */
 function fetchScoringAndStatItems() {
   return new Promise((res, rej) => {
+    const data = {
+      statItems: {},
+      scoringItems: {},
+      logs: [],
+    };
+
     StatsItems.findAll({
         attributes: ['id', 'stat_item_name'],
         order: [['id', 'ASC']],
@@ -174,7 +171,7 @@ function fetchScoringAndStatItems() {
       .then((statIs) => {
         statIs.forEach((sI) => {
           const dV = sI.dataValues;
-          statItems[dV.stat_item_name] = dV.id;
+          data.statItems[dV.stat_item_name] = dV.id;
         });
 
         return PointsItems.findAll({
@@ -185,10 +182,10 @@ function fetchScoringAndStatItems() {
       .then((scoringIs) => {
         scoringIs.forEach((sI) => {
           const dV = sI.dataValues;
-          scoringItems[dV.scoring_item_name] = dV.id;
+          data.scoringItems[dV.scoring_item_name] = dV.id;
         });
 
-        res();
+        res(data);
       })
       .catch((err) => {
         console.error(err);
@@ -210,21 +207,15 @@ function fetchScoringAndStatItems() {
  * gameweek inclusive
  * @param {number} start
  * @param {number} finish
+ * @param {object} data
  * @return {promise.array}
  */
-function fetchEventsData(start, finish) {
+function fetchEventsData(start, finish, data) {
   return new Promise((res, rej) => {
     const gameweeksArray = constructSimpleNumberArray(start, finish);
 
     // Data needs to have keys with the same name as their
     // respective tables to allow for insertion into PG table
-    let data = {
-      scoring_stats: [],
-      scoring_points: [],
-      fixtures: [],
-      logs: [],
-    };
-
     let errorCount = 0;
 
     // Limit queue to concurrency of 1 to ensure calls to API are
@@ -234,7 +225,7 @@ function fetchEventsData(start, finish) {
       const delay = 500;
 
       setTimeout(() => {
-        fetchFromAPI(uri)
+        fetchFromAPI({uri})
           .then((d) => {
             let playerPoints = [];
             let playerStats = [];
@@ -249,15 +240,23 @@ function fetchEventsData(start, finish) {
               return fixture;
             });
 
-            data.fixtures = data.fixtures.concat(cleanFixtures);
+            data.fixtures = data.fixtures
+              ? data.fixtures.concat(cleanFixtures)
+              : cleanFixtures;
 
             if (Object.keys(elements).length > 0) {
-              const cleanData = transformPlayerEventData(elements, week);
+              const cleanData = transformPlayerEventData(elements, week, data);
               playerPoints = cleanData.playerPoints;
               playerStats = cleanData.playerStats;
 
-              data.scoring_points = data.scoring_points.concat(playerPoints);
-              data.scoring_stats = data.scoring_stats.concat(playerStats);
+              // create array in data object if it doesn't exist
+              data.scoring_points = data.scoring_points
+                ? data.scoring_points.concat(playerPoints)
+                : playerPoints.concat([]);
+
+              data.scoring_stats = data.scoring_stats
+                ? data.scoring_stats.concat(playerStats)
+                : playerStats.concat([]);
             }
 
             cb(
@@ -294,11 +293,15 @@ function fetchEventsData(start, finish) {
 
       data.logs.push(totalLog);
 
-      res({...data});
+      res(data);
     };
 
     q.push(gameweeksArray,
       function finishWeek(err, playerPoints, playerStats, fixtures, week) {
+        if (err) {
+          console.error(err);
+        }
+
         let logMessages = err
           ? ['=> ERROR ENCOUNTERED <=']
           : [`=>  Retrieved ${playerPoints} player points items  <==`,
@@ -320,9 +323,10 @@ function fetchEventsData(start, finish) {
  * from the API
  * @param {object} players
  * @param {number} week
+ * @param {number} data
  * @return {array.array}
  */
-function transformPlayerEventData(players, week) {
+function transformPlayerEventData(players, week, data) {
   const rD = {
     playerPoints: [],
     playerStats: [],
@@ -345,7 +349,7 @@ function transformPlayerEventData(players, week) {
       // player, fixure and item ids
       if (pointsKeys.length > 0) {
         pointsKeys.forEach((pKey) => {
-          let pointsItemId = scoringItems[pKey] || pKey;
+          let pointsItemId = data.scoringItems[pKey] || pKey;
           let id = `${playerId}-${fixtureId}-`;
 
           if (!pointsItemId) {
@@ -378,7 +382,7 @@ function transformPlayerEventData(players, week) {
       // player, fixure and item ids
       if (statsKeys.length > 0) {
         statsKeys.forEach((sKey) => {
-          let statsItemId = statItems[sKey] || sKey;
+          let statsItemId = data.statItems[sKey] || sKey;
           let id = `${playerId}-${fixtureId}-`;
 
           if (!statsItemId) {

@@ -17,7 +17,7 @@ const headerFields = {
  * @param {object} options - default true
  * @return {promise}
  */
-function fetchFromAPI(uri, qS, {logging= true}) {
+function fetchFromAPI({uri, qS='', logging=true}) {
   return new Promise((resolve, reject) => {
     if (logging) {
       console.log('Requesting: ' + uri);
@@ -26,7 +26,7 @@ function fetchFromAPI(uri, qS, {logging= true}) {
     // set options for request
     const rpOptions = {
       uri: uri,
-      qs: qS || '',
+      qs: qS,
       headers: headerFields,
       json: true, // automatically parses the JSON string in the response
     };

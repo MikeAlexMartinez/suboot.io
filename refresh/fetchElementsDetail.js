@@ -389,7 +389,7 @@ function fetchElements(data) {
 
       // add delay to API calls to prevent being blacklisted.
       setTimeout(() => {
-        fetchFromAPI(uri, null, {logging: false})
+        fetchFromAPI({uri, logging: false})
           .then((data) => {
             playerDetail[playerId] = data.history;
 

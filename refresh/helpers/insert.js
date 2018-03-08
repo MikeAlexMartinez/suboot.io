@@ -84,6 +84,8 @@ function batchInsert(data, Model, fn) {
 
     // This runs after all items are processed
     q.drain = function queueFinished() {
+      console.log(pb);
+      
       pb.tick()
         .then(() => {
           process.stdout.write(EOL);
@@ -109,7 +111,9 @@ function batchInsert(data, Model, fn) {
       }
 
       // add progress to the progress bar
-      pb.tick();
+      if (item !== data[data.length - 1]) {
+        pb.tick();
+      }
     });
   });
 }
