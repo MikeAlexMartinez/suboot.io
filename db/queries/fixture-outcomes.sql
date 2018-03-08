@@ -1,0 +1,1 @@
+SELECT result AS "Fixture Outcome", COUNT(result) FROM fixtures GROUP BY result;
