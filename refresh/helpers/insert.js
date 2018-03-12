@@ -84,9 +84,9 @@ function batchInsert(data, Model, fn) {
 
     // This runs after all items are processed
     q.drain = function queueFinished() {
-      console.log(pb);
-      
-      pb.tick()
+      const remainingTicks = pb.state.ticksLeft;
+
+      pb.tick(remainingTicks)
         .then(() => {
           process.stdout.write(EOL);
           console.log(
@@ -137,7 +137,13 @@ function insertItem(item, Model) {
       .then(([foundItem, status]) => {
         // item exists
         if (!status) {
-          // console.log(`item ${foundItem.id} was NOT created!`);
+
+          /* console.log(`item ${foundItem.id} was NOT created!`);
+          console.log('Previous: ');
+          console.log(foundItem.dataValues);
+          console.log('New: ');
+          console.log(cleanItem); */
+
           const {isChanged,
             updatedItem} = compareItems(foundItem.dataValues, cleanItem);
 

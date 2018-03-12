@@ -142,8 +142,8 @@ function fetchElementsDetail(target) {
           data
         );
       })
-      .then((log) => {
-        return printLogs([log]);
+      .then((data) => {
+        return printLogs(data);
       })
       .then(() => res())
       .catch((err) => {
@@ -196,7 +196,7 @@ function fetchPlayers(player) {
         const players = data.map((dataItem) => {
           return dataItem.dataValues.id;
         });
-        res({players: players});
+        res({players: players, logs: []});
       })
       .catch((err) => {
         console.error(err);

@@ -11,7 +11,7 @@ const deepEquals = require('fast-deep-equal');
 const {UpdateHeaders,
        UpdateDetails} = require('../../db/Models');
 
-const {createDateId} = require('./general');
+const {createDateId, compareShallowArrays} = require('./general');
 
 const TIMEOFUPDATE = new Date();
 
@@ -64,7 +64,8 @@ function compareItems(previousItem, newItem) {
     const missingKeys = compareShallowArrays(pKeys, nKeys);
 
     // log missing keys to be added in later.
-    console.log(missingKeys);
+    console.log('previous_item_id: ' + previousItem.id);
+    console.log('missingKeys: ' + missingKeys);
   }
 
   // compare each item

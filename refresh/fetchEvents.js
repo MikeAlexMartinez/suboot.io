@@ -441,9 +441,9 @@ function insertFixturesData(fixtures) {
  */
 function transformFixture(fixture) {
   let newFixture = Object.assign({}, fixture);
-  let homePoints;
-  let awayPoints;
-  let result;
+  let homePoints = null;
+  let awayPoints = null;
+  let result = null;
 
   if (fixture.finished) {
     let homeScore = fixture.team_h_score;
@@ -462,12 +462,11 @@ function transformFixture(fixture) {
       awayPoints = 3;
       result = 'AW';
     }
-
-    newFixture.team_h_points = homePoints;
-    newFixture.team_a_points = awayPoints;
-    newFixture.result = result;
   }
 
+  newFixture.team_h_points = homePoints;
+  newFixture.team_a_points = awayPoints;
+  newFixture.result = result;
   newFixture.deadline_time = new Date(fixture.deadline_time);
   newFixture.kickoff_time = new Date(fixture.kickoff_time);
 
