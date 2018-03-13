@@ -19,18 +19,6 @@ const scoringPointsItem = {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
-  player_team_id: {
-    type: Sequelize.INTEGER,
-    allowNull: true,
-  },
-  opponent_team_id: {
-    type: Sequelize.INTEGER,
-    allowNull: true,
-  },
-  was_home: {
-    type: Sequelize.BOOLEAN,
-    allowNull: true,
-  },
   point_item_id: {
     type: Sequelize.INTEGER,
     allowNull: false,
