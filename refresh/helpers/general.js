@@ -5,6 +5,7 @@ module.exports = {
   compareShallowArrays,
   constructSimpleNumberArray,
   createDateId,
+  objectify,
 };
 
 /**
@@ -74,4 +75,33 @@ function appendZero(n) {
   return n.toString().length < 2
     ? `0${n}`
     : n.toString();
+}
+
+/**
+ * @param {array} a
+ * @param {string} key
+ * @param {array} values
+ * @return {object}
+ */
+function objectify(a, key, values) {
+  let retObj = {};
+  // loop over a
+  for (let i = 0; i < a.length; i++) {
+    let obj = a[i];
+    let keyValue = obj[key];
+    // if only one value key provided return object
+    // of scalar values
+    if (values.length === 1) {
+      retObj[obj[key]] = obj[values[0]];
+
+    // else return obj of objs.
+    } else {
+      let innerObj = {};
+      for ( let j = 0; j < values.length; j++) {
+        innerObj[values[j]] = obj[values[j]];
+      }
+      retObj[keyValue] = innerObj;
+    }
+  }
+  return retObj;
 }

@@ -25,6 +25,10 @@ function manageModelUpdate(db, model, modelDef, Model, fn, data) {
         return fn(data[model], Model);
       })
       .then(({updates, errors, noChange, news}) => {
+        if (!data.logs) {
+          data.logs = [];
+        }
+
         const log = {
           name: model,
           results: [

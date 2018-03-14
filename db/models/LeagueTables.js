@@ -4,7 +4,7 @@ const Sequelize = require('sequelize');
 
 const LeagueTable = {
   id: {
-    type: Sequelize.STRING(5),
+    type: Sequelize.STRING(7),
     primaryKey: true,
     allowNull: false,
   },
@@ -60,9 +60,17 @@ const LeagueTable = {
     type: Sequelize.SMALLINT,
     allowNull: true,
   },
-  gameweek: {
+  gameweek_id: {
     type: Sequelize.SMALLINT,
     allowNull: false,
+  },
+  createdAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
+  },
+  updatedAt: {
+    type: Sequelize.DATE,
+    defaultValue: new Date(),
   },
 };
 
