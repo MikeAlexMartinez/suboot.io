@@ -21,6 +21,9 @@ Promise.all(
   .then(([fixtures, teams]) => {
     return callCreateTables(fixtures.data.finished, teams.data);
   })
+  .then((tables) => {
+    console.log(tables);
+  })
   .catch((err) => {
     console.error(err);
   });
@@ -32,12 +35,8 @@ Promise.all(
  */
 function callCreateTables(fixtures, teams) {
   return new Promise((res, rej) => {
-    console.log(fixtures);
-
-    let teamArr = teams.map((t) => t.short_name);
-
     const tables = createTables({
-        teams: teamArr,
+        teams: teams,
         fixtures: fixtures,
         all: true,
         range: false,
@@ -46,6 +45,6 @@ function callCreateTables(fixtures, teams) {
         lastXGames: 0,
       });
 
-    console.log(tables);
+    res(tables);
   });
 }
