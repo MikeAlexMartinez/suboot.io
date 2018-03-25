@@ -4,11 +4,13 @@
 require('dotenv').config();
 const Sequelize = require('sequelize');
 
+const {DB_PORT, DB_USER, DB_PWD} = process.env;
+
 const sequelize = new Sequelize('subootio',
-  process.env.DB_USER, process.env.DB_PWD,
+  DB_USER, DB_PWD,
   {
     host: 'localhost',
-    port: process.env.DB_PORT,
+    port: DB_PORT,
     dialect: 'postgres',
     logging: false,
     pool: {
