@@ -110,13 +110,9 @@ function createTables({teams, fixtures, all, range, start, end, lastXGames}) {
       let awayTeam = away[key];
       awayTeam.goal_difference = awayTeam.for - awayTeam.against;
     });
-
-    if (lastXGames) {
-      
-    }
   }
 
-  if(!lastXGames) {
+  if (!lastXGames) {
     // create total table by combining home and away
     const fields = ['played', 'won', 'draw', 'lost', 'for',
       'against', 'goal_difference', 'points'];
