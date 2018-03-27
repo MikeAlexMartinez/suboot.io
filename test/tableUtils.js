@@ -46,7 +46,11 @@ function createTables({teams, fixtures, all, range, start, end, lastXGames}) {
   for (let i = 0; i < fixtures.length; i++) {
     let f = fixtures[i];
     // if range check gameweek is within parameters provided.
-    if (all || (range && f.gameweek_id >= start && f.gameweek_id <= end)) {
+    if ( all ||
+        // filter for range here
+        (range && f.gameweek_id >= start && f.gameweek_id <= end) ||
+        // lastXGames filters applied throughout
+        lastXGames) {
       const homeTeamShortName = f.home_team_short;
       const awayTeamShortName = f.away_team_short;
       const hT = home[homeTeamShortName];
@@ -64,59 +68,110 @@ function createTables({teams, fixtures, all, range, start, end, lastXGames}) {
         : result === 'HW'
           ? 'L'
           : 'D';
+      const homePlayed = hT.played + 1;
+      const homeTotalPlayed = htT.played + 1;
+      const awayPlayed = aT.played + 1;
+      const awayTotalPlayed = atT.played + 1;
 
-      home[homeTeamShortName] = {
-        ...hT,
-        played: hT.played + 1,
-        won: result === 'HW' ? hT.won + 1 : hT.won,
-        draw: result === 'SD' || result === 'ND' ? hT.draw + 1 : hT.draw,
-        lost: result === 'AW' ? hT.lost + 1 : hT.lost,
-        for: hT.for + f.home_fix_goals,
-        against: hT.against + f.away_fix_goals,
-        points: hT.points + f.home_fix_points,
-        form: hT.form.concat([homeResult]),
-      };
+      if (!lastXGames ||
+         (lastXGames && homePlayed <= lastXGames) ) {
+        home[homeTeamShortName] = {
+          ...hT,
+          played: homePlayed,
+          won: result === 'HW' ? hT.won + 1 : hT.won,
+          draw: result === 'SD' || result === 'ND' ? hT.draw + 1 : hT.draw,
+          lost: result === 'AW' ? hT.lost + 1 : hT.lost,
+          for: hT.for + f.home_fix_goals,
+          against: hT.against + f.away_fix_goals,
+          points: hT.points + f.home_fix_points,
+          form: hT.form.concat([homeResult]),
+        };
+      }
 
-      total[homeTeamShortName] = {
-        ...htT,
-        form: htT.form.concat([homeResult]),
-      };
+      if (!lastXGames) {
+        // add form to total table for home team, as awkward to merge
+        total[homeTeamShortName] = {
+          ...htT,
+          form: htT.form.concat([homeResult]),
+        };
+      } else if (homeTotalPlayed <= lastXGames) {
+        // update total table for home team
+        total[homeTeamShortName] = {
+          ...htT,
+          played: htT.played + 1,
+          won: result === 'HW' ? htT.won + 1 : htT.won,
+          draw: result === 'SD' || result === 'ND' ? htT.draw + 1 : htT.draw,
+          lost: result === 'AW' ? htT.lost + 1 : htT.lost,
+          for: htT.for + f.home_fix_goals,
+          against: htT.against + f.away_fix_goals,
+          points: htT.points + f.home_fix_points,
+          form: htT.form.concat([homeResult]),
+        };
+      }
 
-      away[awayTeamShortName] = {
-        ...aT,
-        played: aT.played + 1,
-        won: result === 'AW' ? aT.won + 1 : aT.won,
-        draw: result === 'SD' || result === 'ND' ? aT.draw + 1 : aT.draw,
-        lost: result === 'HW' ? aT.lost + 1 : aT.lost,
-        for: aT.for + f.away_fix_goals,
-        against: aT.against + f.home_fix_goals,
-        points: aT.points + f.away_fix_points,
-        form: aT.form.concat([awayResult]),
-      };
+      // if lastXGames not specified update object for new fixture details
+      // or if gamecount is less than lastXGames
+      if (!lastXGames ||
+         (lastXGames && awayPlayed <= lastXGames) ) {
+        away[awayTeamShortName] = {
+          ...aT,
+          played: awayPlayed,
+          won: result === 'AW' ? aT.won + 1 : aT.won,
+          draw: result === 'SD' || result === 'ND' ? aT.draw + 1 : aT.draw,
+          lost: result === 'HW' ? aT.lost + 1 : aT.lost,
+          for: aT.for + f.away_fix_goals,
+          against: aT.against + f.home_fix_goals,
+          points: aT.points + f.away_fix_points,
+          form: aT.form.concat([awayResult]),
+        };
+      }
 
-      total[awayTeamShortName] = {
-        ...atT,
-        form: atT.form.concat([awayResult]),
-      };
+      if (!lastXGames) {
+        // add form to total table for array team, as awkward to merge
+        total[awayTeamShortName] = {
+          ...atT,
+          form: atT.form.concat([awayResult]),
+        };
+      } else if (awayTotalPlayed <= lastXGames) {
+        // update total table for away team
+        total[awayTeamShortName] = {
+          ...atT,
+          played: awayPlayed,
+          won: result === 'AW' ? atT.won + 1 : atT.won,
+          draw: result === 'SD' || result === 'ND' ? atT.draw + 1 : atT.draw,
+          lost: result === 'HW' ? atT.lost + 1 : atT.lost,
+          for: atT.for + f.away_fix_goals,
+          against: atT.against + f.home_fix_goals,
+          points: atT.points + f.away_fix_points,
+          form: atT.form.concatT([awayResult]),
+        };
+      }
     }
-
-    // Do goal differences
-    Object.keys(home).forEach((key) => {
-      let homeTeam = home[key];
-      homeTeam.goal_difference = homeTeam.for - homeTeam.against;
-    });
-
-    Object.keys(away).forEach((key) => {
-      let awayTeam = away[key];
-      awayTeam.goal_difference = awayTeam.for - awayTeam.against;
-    });
   }
+
+  // Do goal differences
+  Object.keys(home).forEach((key) => {
+    let homeTeam = home[key];
+    homeTeam.goal_difference = homeTeam.for - homeTeam.against;
+  });
+
+  Object.keys(away).forEach((key) => {
+    let awayTeam = away[key];
+    awayTeam.goal_difference = awayTeam.for - awayTeam.against;
+  });
 
   if (!lastXGames) {
     // create total table by combining home and away
     const fields = ['played', 'won', 'draw', 'lost', 'for',
-      'against', 'goal_difference', 'points'];
+    'against', 'goal_difference', 'points'];
     total = mergeTables(home, away, total, fields);
+  } else {
+    // Need to produce total table goal difference seperately
+    // if lastXgames as mergeTables() isn't used.
+    Object.keys(total).forEach((key) => {
+      let team = total[key];
+      team.goal_difference = team.for - team.against;
+    });
   }
 
   return {
