@@ -1,0 +1,280 @@
+{
+  "all": {
+    "total": {
+      "manCity": {
+        "teamName": "Man City",
+        "key": "MCI",
+        "played": 30,
+        "won": 26,
+        "draw": 3,
+        "lost": 1,
+        "for": 85,
+        "against": 20,
+        "goal_difference": 65,
+        "points": 81,
+        "form": [
+          "W", "W", "W", "W", "D", "W", "W", "L", "W", "D",
+          "W", "W", "W", "W", "W", "W", "W", "W", "W", "W",
+          "W", "W", "W", "W", "W", "W", "W", "W", "D", "W"]
+      },
+      "westBrom": {
+        "teamName": "West Brom",
+        "key": "WBA",
+        "played": 31,
+        "won": 3,
+        "draw": 11,
+        "lost": 17,
+        "for": 24,
+        "against": 49,
+        "goal_difference": -25,
+        "points": 20,
+        "form": [
+          "L", "L", "L", "L", "L", "L", "L", "D", "W", "L", "D",
+          "D", "L", "L", "D", "L", "D", "D", "D", "L", "L",
+          "L", "L", "D", "D", "L", "D", "L", "D", "W", "W"]
+      }
+    },
+    "home": {
+      "manCity": {
+        "teamName": "Man City",
+        "key": "MCI",
+        "played": 15,
+        "won": 14,
+        "draw": 1,
+        "lost": 0,
+        "for": 51,
+        "against": 10,
+        "goal_difference": 41,
+        "points": 43,
+        "form": [
+          "W", "W", "W", "W", "W",
+          "W", "W", "W", "W", "W",
+          "W", "W", "W", "W", "D"]
+      },
+      "westBrom": {
+        "teamName": "West Brom",
+        "key": "WBA",
+        "played": 15,
+        "won": 2,
+        "draw": 7,
+        "lost": 6,
+        "for": 16,
+        "against": 24,
+        "goal_difference": -8,
+        "points": 13,
+        "form": [
+          "L", "L", "L", "W", "D",
+          "D", "L", "D", "D", "L",
+          "L", "D", "D", "D", "W"]
+      }
+    },
+    "away": {
+      "manCity": {
+        "teamName": "Man City",
+        "key": "MCI",
+        "played": 15,
+        "won": 12,
+        "draw": 2,
+        "lost": 1,
+        "for": 34,
+        "against": 10,
+        "goal_difference": 24,
+        "points": 38,
+        "form": [
+          "W", "W", "D", "L", "D",
+          "W", "W", "W", "W", "W",
+          "W", "W", "W", "W", "W"]
+      },
+      "westBrom": {
+        "teamName": "West Brom",
+        "key": "WBA",
+        "played": 16,
+        "won": 1,
+        "draw": 4,
+        "lost": 11,
+        "for": 8,
+        "against": 25,
+        "goal_difference": -17,
+        "points": 7,
+        "form": [
+          "L", "L", "L", "L", "D",
+          "L", "L", "D", "L", "D", "L",
+          "L", "D", "L", "L", "W"]
+      }
+    }
+  },
+  "range": {
+    "total": {
+      "manCity": {
+        "teamName": "Man City",
+        "key": "MCI",
+        "played": 10,
+        "won": 10,
+        "draw": 0,
+        "lost": 0,
+        "for": 26,
+        "against": 6,
+        "goal_difference": 20,
+        "points": 30,
+        "form": ["W", "W", "W", "W", "W",
+                 "W", "W", "W", "W", "W"]
+      },
+      "newcastle": {
+        "teamName": "Newcastle",
+        "key": "NEW",
+        "played": 10,
+        "won": 1,
+        "draw": 1,
+        "lost": 8,
+        "for": 9,
+        "against": 21,
+        "goal_difference": -12,
+        "points": 4,
+        "form": ["L", "W", "L", "L", "L", 
+                 "L", "D", "L", "L", "L"]
+      }
+    },
+    "home": {
+      "manCity": {
+        "teamName": "Man City",
+        "key": "MCI",
+        "played": 5,
+        "won": 5,
+        "draw": 0,
+        "lost": 0,
+        "for": 15,
+        "against": 4,
+        "goal_difference": 11,
+        "points": 15,
+        "form": ["W", "W", "W", "W", "W"]
+      },
+      "newcastle": {
+        "teamName": "Newcastle",
+        "key": "NEW",
+        "played": 5,
+        "won": 0,
+        "draw": 0,
+        "lost": 5,
+        "for": 2,
+        "against": 9,
+        "goal_difference": -7,
+        "points": 0,
+        "form": ["L", "L", "L", "L", "L"] 
+      }
+    },
+    "away": {
+      "manCity": {
+        "teamName": "Man City",
+        "key": "MCI",
+        "played": 5,
+        "won": 5,
+        "draw": 0,
+        "lost": 0,
+        "for": 11,
+        "against": 2,
+        "goal_difference": 9,
+        "points": 15,
+        "form": ["W", "W", "W", "W", "W"]
+      },
+      "newcastle": {
+        "teamName": "Newcastle",
+        "key": "NEW",
+        "played": 5,
+        "won": 1,
+        "draw": 1,
+        "lost": 3,
+        "for": 7,
+        "against": 12,
+        "goal_difference": -5,
+        "points": 4,
+        "form": ["W", "L", "L", "D", "L"]
+      }
+    }
+  },
+  "lastX": {
+    "total": {
+      "manCity": {
+        "teamName": "Man City",
+        "key": "MCI",
+        "played": 5,
+        "won": 4,
+        "draw": 1,
+        "lost": 0,
+        "for": 12,
+        "against": 2,
+        "goal_difference": 10,
+        "points": 13,
+        "form": ["W", "W", "W", "W", "D"]
+      },
+      "liverpool": {
+        "teamName": "Liverpool",
+        "key": "LIV",
+        "played": 5,
+        "won": 4,
+        "draw": 0,
+        "lost": 1,
+        "for": 14,
+        "against": 3,
+        "goal_difference": -11,
+        "points": 12,
+        "form": ["W", "L", "W", "W", "W"]
+      }
+    },
+    "home": {
+      "manCity": {
+        "teamName": "Man City",
+        "key": "MCI",
+        "played": 5,
+        "won": 5,
+        "draw": 0,
+        "lost": 0,
+        "for": 15,
+        "against": 3,
+        "goal_difference": 12,
+        "points": 15,
+        "form": ["W", "W", "W", "W", "W"]
+      },
+      "liverpool": {
+        "teamName": "Liverpool",
+        "key": "LIV",
+        "played": 5,
+        "won": 4,
+        "draw": 1,
+        "lost": 0,
+        "for": 17,
+        "against": 6,
+        "goal_difference": 11,
+        "points": 13,
+        "form": ["W", "W", "W", "D", "W"] 
+      }
+    },
+    "away": {
+      "manCity": {
+        "teamName": "Man City",
+        "key": "MCI",
+        "played": 5,
+        "won": 2,
+        "draw": 2,
+        "lost": 1,
+        "for": 9,
+        "against": 5,
+        "goal_difference": 4,
+        "points": 8,
+        "form": ["D", "L", "D", "W", "W"]
+      },
+      "liverpool": {
+        "teamName": "Liverpool",
+        "key": "LIV",
+        "played": 5,
+        "won": 3,
+        "draw": 0,
+        "lost": 2,
+        "for": 8,
+        "against": 4,
+        "goal_difference": 4,
+        "points": 9,
+        "form": ["W", "L", "W", "W", "L"]
+      }
+    }
+  }
+}

@@ -1,5 +1,16 @@
 'use strict';
 
+const teams = require('../test/data/testTeamData.json');
+const fixtures = require('../test/data/testFixtureData.json');
+
+const {home: homeTable, away: awayTable, total: totalTable} = createTables({
+  teams,
+  fixtures,
+  all: false,
+  range: false,
+  lastXGames: 5,
+});
+
 /**
  * this will contain an algorithm to construct home, away, or total
  * league tables based on the fixtures data, and setting present
@@ -36,7 +47,7 @@ function createTables({teams, fixtures, all, range, start, end, lastXGames}) {
   }, {});
   let away = {...home};
   let total = {...home};
-
+  let lastXComplete = false;
   /**
    * Items to create:
    * team name, games played, win, lost, drawn, for, against, goal difference
@@ -45,12 +56,13 @@ function createTables({teams, fixtures, all, range, start, end, lastXGames}) {
   // loop through fixtures to create home and away tables.
   for (let i = 0; i < fixtures.length; i++) {
     let f = fixtures[i];
+    let fixtureId = f.fixture_id;
     // if range check gameweek is within parameters provided.
     if ( all ||
-        // filter for range here
-        (range && f.gameweek_id >= start && f.gameweek_id <= end) ||
-        // lastXGames filters applied throughout
-        lastXGames) {
+      // filter for range here
+      (range && f.gameweek_id >= start && f.gameweek_id <= end) ||
+      // lastXGames filters applied throughout
+      lastXGames && !lastXComplete) {
       const homeTeamShortName = f.home_team_short;
       const awayTeamShortName = f.away_team_short;
       const hT = home[homeTeamShortName];
@@ -127,7 +139,7 @@ function createTables({teams, fixtures, all, range, start, end, lastXGames}) {
       }
 
       if (!lastXGames) {
-        // add form to total table for array team, as awkward to merge
+        // add form to total table for away team, as awkward to merge
         total[awayTeamShortName] = {
           ...atT,
           form: atT.form.concat([awayResult]),
@@ -143,7 +155,7 @@ function createTables({teams, fixtures, all, range, start, end, lastXGames}) {
           for: atT.for + f.away_fix_goals,
           against: atT.against + f.home_fix_goals,
           points: atT.points + f.away_fix_points,
-          form: atT.form.concatT([awayResult]),
+          form: atT.form.concat([awayResult]),
         };
       }
     }

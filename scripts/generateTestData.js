@@ -58,11 +58,11 @@ async function createTableData() {
 
   const [fixRes, teamRes] = await Promise.all([
     writeToFile(
-      path.resolve(__dirname, 'data', 'testTeamData.json'),
+      path.resolve(__dirname, '../test', 'data', 'testTeamData.json'),
       teamData
     ),
     writeToFile(
-      path.resolve(__dirname, 'data', 'testFixtureData.json'),
+      path.resolve(__dirname, '../test', 'data', 'testFixtureData.json'),
       fixtureData
     )]
   ).catch(errorHandler);
