@@ -1,8 +1,13 @@
 // This file will run the scheduler at set intervals.
 // Running processes when necessary.
-// The goal wil be to update data once it is complete in the fantasy
+// The goal will be to update data fully once it is complete in the fantasy
 // football website.
 // i.e. I will seek to refresh data, once a days matches are complete.
+
+const logger = require('./winston');
+
+const {fetchMain} = require('./refresh/fetchMain');
+const {fetchTimeToNext} = require('./utils/dates');
 
 /* in between gameweeks ./drf/bootstrap-static
   - hit main api once every 20 minutes to monitor ownership of players and
@@ -13,6 +18,32 @@
 
   This should run constantly (504 api calls per week)
 */
+
+/**
+ * @param {error} err
+ */
+function handleError(err) {
+  logger('error', err);
+}
+
+// Run main function
+main();
+
+/**
+ * This function controls main timer
+ */
+function main() {
+  const timeout = fetchTimeToNext(1);
+  console.log(timeout);
+  setTimeout(() => {
+    fetchMain()
+      .then((data) => {
+        // check
+        main();
+      })
+      .catch(handleError);
+  }, 5000);
+}
 
 /* Gameweek starts (triggered by main api) ./drf/event/{gameweek}/live
   -> Starting one hour after fixture grouping starts call every hour, until

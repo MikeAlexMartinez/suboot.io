@@ -99,12 +99,11 @@ function fetchMain() {
         );
       })
       .then((data) => {
-        return printLogs(data);
+        printLogs(data);
+        res(data);
       })
-      .then((data) => process.exit(0))
       .catch((err) => {
-        console.error(err);
-        process.exit(1);
+        rej(err);
       });
   });
 };

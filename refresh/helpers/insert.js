@@ -1,8 +1,7 @@
 'use strict';
 
 const async = require('async');
-const {Progress} = require('super-progress');
-const {EOL} = require('os');
+const _cliProgress = require('cli-progress');
 
 const {compareItems, processUpdate, cleanNewItem} = require('./updateTracking');
 
@@ -35,16 +34,16 @@ function batchInsert(data, Model, fn) {
 
   return new Promise((res) => {
     // prepare progress bar options
-    const pbOptions = {
-      total: data.length,
-      pattern: `[{spinner}] {bar} | Elapsed: {elapsed} | {percent}`,
-      renderInterval: 1,
+    const progressOtions = {
+      stopOnComplete: true,
     };
 
-    const pb = Progress.create(
-      process.stdout.columns - Math.floor(process.stdout.columns*0.25),
-      pbOptions
+    const progressBar = new _cliProgress.Bar(
+      progressOtions,
+      _cliProgress.Presets.shades_classic
     );
+
+    progressBar.start(data.length, 0);
 
     // capture and categorise the results of the data.
     const updates = [];
@@ -84,21 +83,17 @@ function batchInsert(data, Model, fn) {
 
     // This runs after all items are processed
     q.drain = function queueFinished() {
-      const remainingTicks = pb.state.ticksLeft;
+      progressBar.stop();
+      console.log(
+        `Finished processing items for table ${Model.getTableName()}`
+      );
 
-      pb.tick(remainingTicks)
-        .then(() => {
-          process.stdout.write(EOL);
-          console.log(
-            `Finished processing items for table ${Model.getTableName()}`
-          );
-          res({
-            updates,
-            errors,
-            noChange,
-            news,
-          });
-        });
+      res({
+        updates,
+        errors,
+        noChange,
+        news,
+      });
     };
 
     // This runs after each item has been processed
@@ -111,9 +106,7 @@ function batchInsert(data, Model, fn) {
       }
 
       // add progress to the progress bar
-      if (item !== data[data.length - 1]) {
-        pb.tick();
-      }
+      progressBar.update(progressBar.value + 1);
     });
   });
 }
@@ -137,7 +130,6 @@ function insertItem(item, Model) {
       .then(([foundItem, status]) => {
         // item exists
         if (!status) {
-
           /* console.log(`item ${foundItem.id} was NOT created!`);
           console.log('Previous: ');
           console.log(foundItem.dataValues);
