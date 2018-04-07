@@ -130,6 +130,9 @@ function getMainData() {
           teams: d.teams,
           gameweeks: d.events,
           logs: [],
+          currentGameweek: d.current-event,
+          nextFixtures: d.next_event_fixtures,
+          nextGameweek: d.next-event,
         };
         res(data);
       })

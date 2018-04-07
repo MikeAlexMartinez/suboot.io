@@ -19,11 +19,14 @@ exports.fetchTimeToNext = function(n, time) {
   }
 
   // get current time if not set
-  const now = time || moment();
+  const now = time || moment().add(1, 'ms');
 
   // calculate next target minutes
-  let minutes = Math.ceil(now.minutes() / n) * n;
-  let target = now.clone().minutes(minutes).second(0).millisecond(0);
+  const fraction = now.minutes() % n === 0
+    ? ((now.minutes() + 0.5) / n)
+    : (now.minutes() / n);
+  const minutes = Math.ceil(fraction) * n;
+  const target = now.clone().minutes(minutes).second(0).millisecond(0);
 
   // calculate difference in milliseconds
   return moment.duration(target.diff(now)).asMilliseconds();

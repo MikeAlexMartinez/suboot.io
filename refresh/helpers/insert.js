@@ -36,6 +36,7 @@ function batchInsert(data, Model, fn) {
     // prepare progress bar options
     const progressOtions = {
       stopOnComplete: true,
+      format: '[{bar}] {percentage}% | {value}/{total}',
     };
 
     const progressBar = new _cliProgress.Bar(

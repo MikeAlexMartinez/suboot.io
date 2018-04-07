@@ -4,6 +4,7 @@
 // football website.
 // i.e. I will seek to refresh data, once a days matches are complete.
 
+const moment = require('moment');
 const logger = require('./winston');
 
 const {fetchMain} = require('./refresh/fetchMain');
@@ -24,7 +25,12 @@ const {fetchTimeToNext} = require('./utils/dates');
  */
 function handleError(err) {
   logger('error', err);
+  main();
 }
+
+let currentGameweek = 33;
+let nextGameweek = 34;
+let nextFixtures = [];
 
 // Run main function
 main();
@@ -33,16 +39,38 @@ main();
  * This function controls main timer
  */
 function main() {
-  const timeout = fetchTimeToNext(1);
-  console.log(timeout);
+  const fetchMainConfig = require('./schedule.config.json').fetchMain;
+  const timeout = fetchTimeToNext(fetchMainConfig);
+
+  logger('info', `Next process will run at ${
+    moment().add(timeout, 'ms').format()
+  }`);
+
   setTimeout(() => {
+    logger('info', `RUNNING fetchMain at ${moment().format()}`);
     fetchMain()
       .then((data) => {
-        // check
+        console.log(Object.keys(data).toString());
+        console.log(data.currentGameweek);
+        console.log(data.nextGameweek);
+        console.log(data.nextFixtures);
+        
+        // if current gameweek changes start activeGameweek
+        // passing current fixtures in nextfixtures variable.
+        
+        // if not,
+  
+  
         main();
       })
       .catch(handleError);
-  }, 5000);
+  }, timeout);
+
+  /*
+  const timeout = fetchTimeToNext(1);
+  console.log(timeout);
+  setTimeout(() => {
+  }, 5000);*/
 }
 
 /* Gameweek starts (triggered by main api) ./drf/event/{gameweek}/live
@@ -62,6 +90,11 @@ function main() {
   At end of day process, rerun createLeagueTable and createTeamPointsTable
   process. (and any other necessary analysis)
 */
+function activeGameweek(fixtures) {
+  
+
+  // 
+}
 
 /* At end of gameweek
   - Rerun full process once
@@ -72,6 +105,9 @@ function main() {
   - reproduce any analysis tables
   - refresh any data sources for website
 */
+function endGameweek() {
+
+}
 
 /* Total expected API calls
   - Main process ./drf/bootstrap-static - 504 api calls per week

@@ -6,8 +6,6 @@ const Sequelize = require('sequelize');
 
 const {DB_PORT, DB_USER, DB_PWD} = process.env;
 
-console.log(DB_PORT, DB_USER, DB_PWD);
-
 const sequelize = new Sequelize('subootio',
   DB_USER, DB_PWD,
   {

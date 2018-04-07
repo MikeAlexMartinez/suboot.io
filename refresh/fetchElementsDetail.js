@@ -39,8 +39,7 @@ const path = require('path');
 
 // Third Party modules
 const async = require('async');
-const {Progress} = require('super-progress');
-const {EOL} = require('os');
+const _cliProgress = require('cli-progress');
 
 // Models and DB
 const db = require('../db/connect');
@@ -370,16 +369,18 @@ function fetchElements(data) {
     const playerDetail = {};
     const targets = data.players;
 
-    const pbOptions = {
-      total: targets.length,
-      pattern: `[{spinner}] {bar} | Elapsed: {elapsed} | {percent}`,
-      renderInterval: 1,
+    // prepare progress bar options
+    const progressOtions = {
+      stopOnComplete: true,
+      format: '[{bar}] {percentage}% | {value}/{total}',
     };
 
-    const pb = Progress.create(
-      process.stdout.columns - Math.floor(process.stdout.columns*0.25),
-      pbOptions
+    const progressBar = new _cliProgress.Bar(
+      progressOtions,
+      _cliProgress.Presets.shades_classic
     );
+
+    progressBar.start(targets.length, 0);
 
     let errors = [];
     let processed = [];
@@ -404,12 +405,9 @@ function fetchElements(data) {
     }, 1);
 
     q.drain = function queueFinished() {
-      pb.tick()
-        .then(() => {
-          process.stdout.write(EOL);
-          console.log(`Finished fetching element details`);
-          res({...data, detail: playerDetail, errors: errors});
-        });
+      progressBar.stop();
+      console.log(`Finished fetching element details`);
+      res({...data, detail: playerDetail, errors: errors});
     };
 
     q.push(targets, function processDetail(err, id) {
@@ -420,7 +418,8 @@ function fetchElements(data) {
         processed.push(id);
       }
 
-      pb.tick();
+      // add progress to the progress bar
+      progressBar.update(progressBar.value + 1);
     });
   });
 }
