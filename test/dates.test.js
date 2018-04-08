@@ -1,3 +1,5 @@
+'use strict';
+
 const assert = require('assert');
 const moment = require('moment');
 const {
@@ -5,6 +7,8 @@ const {
   match,
   lastWeek,
   displayDate,
+  determineCurrentDay,
+  determineNextDay,
 } = require('../utils/dates');
 
 const seconds = 1000;
@@ -192,6 +196,105 @@ describe('dates helpers ---> ', () => {
       assert.equal(test, expected, `Expected ${test} to equal ${expected}`);
 
       done();
+    });
+  });
+
+  describe('determineCurrentDay()', () => {
+    it('should return moment when currentDate is present', () => {
+      const todayFormatted = moment().format('YYYY-MM-DD');
+      const today = moment(todayFormatted);
+      const dates = ['2017-12-01', todayFormatted, '2017-03-10'];
+      const currentDate = determineCurrentDay(dates);
+
+      assert.equal(
+        currentDate instanceof moment,
+        true,
+        'expected date returned to be Moment date instance'
+      );
+
+      assert.deepEqual(
+        today,
+        currentDate,
+        'expected date returned to be same as today'
+      );
+    });
+
+    it('should return null if today is not passed', () => {
+      const oldDates = ['2017-12-01', '2018-04-07'];
+      const currentDate = determineCurrentDay(oldDates);
+
+      assert.equal(currentDate, null, 'expected date to be null');
+    });
+  });
+
+  describe('determineNextDay()', () => {
+    describe('should identify when later day is present', () => {
+      const todayFormatted = moment().format('YYYY-MM-DD');
+      const tomorrowFormatted = moment().add(1, 'd').format('YYYY-MM-DD');
+      const tomorrow = moment(tomorrowFormatted);
+      const dates = ['2017-08-01', todayFormatted, tomorrowFormatted];
+      const nextDay = determineNextDay(dates);
+
+      it('returns an instance of a moment', () => {
+        assert.equal(
+          nextDay instanceof moment,
+          true,
+          'expected returned date to be an instance of a moment'
+        );
+      });
+
+      it('returns a date equal to tomorrow', () => {
+        assert.deepEqual(
+          nextDay,
+          tomorrow,
+          'expected returned date to be equal to tomorrow'
+        );
+      });
+    });
+
+    describe('should identify when no future date is present', () => {
+      const todayFormatted = moment().format('YYYY-MM-DD');
+      const dates = ['2018-04-07', '2017-08-01', todayFormatted];
+      const nextDay = determineNextDay(dates);
+
+      it('should return null', () => {
+        assert.equal(
+          nextDay,
+          null,
+          'expected returned date to be null'
+        );
+      });
+    });
+
+    describe('where multiple future dates are present should return ' +
+      'closest future date', () => {
+      const todayFormatted = moment().format('YYYY-MM-DD');
+      const tomorrowFormatted = moment().add(1, 'd').format('YYYY-MM-DD');
+      const tomorrow = moment(tomorrowFormatted);
+      const laterFormatted =
+        tomorrow.clone().add(3, 'd').format('YYYY-MM-DD');
+      const dates = [
+        '2017-08-01',
+        todayFormatted,
+        tomorrowFormatted,
+        laterFormatted];
+      const nextDay = determineNextDay(dates);
+
+      it('returns an instance of a moment', () => {
+        assert.equal(
+          nextDay instanceof moment,
+          true,
+          'expected returned date to be an instance of a moment'
+        );
+      });
+
+      it('returns a date equal to tomorrow', () => {
+        assert.deepEqual(
+          nextDay,
+          tomorrow,
+          'expected returned date to be equal to tomorrow'
+        );
+      });
     });
   });
 });

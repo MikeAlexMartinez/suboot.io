@@ -3,6 +3,50 @@
 const moment = require('moment');
 
 /**
+ * takes ordered (earliest first) array of date strings and returns
+ * the next closest future date. If no future date present return null.
+ * @param {array} gamedays
+ * @return {moment|null}
+ */
+exports.determineNextDay = function(gamedays) {
+  let nextGameDay = null;
+  const today = moment().format('YYYY-MM-DD');
+
+  gamedays.some((date) => {
+    let day = moment(date);
+    if (day.isAfter(today)) {
+      nextGameDay = day;
+      return true;
+    }
+    return false;
+  });
+
+  return nextGameDay;
+};
+
+/**
+ * takes array of date strings and returns current date as moment
+ * or null if today isn't present.
+ * @param {array} gamedays
+ * @return {moment|null}
+ */
+exports.determineCurrentDay = function(gamedays) {
+  let currentGameday = null;
+  const today = moment().format('YYYY-MM-DD');
+
+  gamedays.some((date) => {
+    let day = moment(date);
+    if (day.isSame(today)) {
+      currentGameday = day.clone();
+      return true;
+    }
+    return false;
+  });
+
+  return currentGameday;
+};
+
+/**
  * This function returns the number of milliseconds
  * until the next 20 / 40 minutes past the hour. or
  * on the hour.

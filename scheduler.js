@@ -8,7 +8,11 @@ const moment = require('moment');
 const logger = require('./winston');
 
 const {fetchMain} = require('./refresh/fetchMain');
-const {fetchTimeToNext} = require('./utils/dates');
+const {fetchEvents} = require('./refresh/fetchMain');
+const {fetchTimeToNext,
+  determineCurrentDay,
+  determineNextDay} = require('./utils/dates');
+const {filterFixtures} = require('./utils/arrays');
 
 /* in between gameweeks ./drf/bootstrap-static
   - hit main api once every 20 minutes to monitor ownership of players and
@@ -25,12 +29,9 @@ const {fetchTimeToNext} = require('./utils/dates');
  */
 function handleError(err) {
   logger('error', err);
-  main();
 }
 
-let currentGameweek = 33;
-let nextGameweek = 34;
-let nextFixtures = [];
+let currentGameweek = 32;
 
 // Run main function
 main();
@@ -50,20 +51,28 @@ function main() {
     logger('info', `RUNNING fetchMain at ${moment().format()}`);
     fetchMain()
       .then((data) => {
-        console.log(Object.keys(data).toString());
-        console.log(data.currentGameweek);
-        console.log(data.nextGameweek);
-        console.log(data.nextFixtures);
-        
+        const {
+          currentGameweek: newGameweek,
+          nextFixtures,
+        } = data;
+
+        currentGameweek = newGameweek;
+
         // if current gameweek changes start activeGameweek
         // passing current fixtures in nextfixtures variable.
-        
+        if (newGameweek !== currentGameweek) {
+          let thisGameweek = new ActiveGameweek(currentGameweek);
+          thisGameweek.run();
+        }
+
+        currentNextFixtures = nextFixtures;
         // if not,
-  
-  
         main();
       })
-      .catch(handleError);
+      .catch((err) => {
+        handleError(err);
+        main();
+      });
   }, timeout);
 
   /*
@@ -90,10 +99,55 @@ function main() {
   At end of day process, rerun createLeagueTable and createTeamPointsTable
   process. (and any other necessary analysis)
 */
-function activeGameweek(fixtures) {
-  
 
-  // 
+/**
+ * @param {number} currentGameweek
+ * @return {object}
+ */
+class ActiveGameweek {
+  /**
+   * @param {number} currentGameweek
+   */
+  constructor(currentGameweek) {
+    this.currentGameweek = currentGameweek;
+
+    fetchEvents(this.currentGameweek, this.currentGameweek)
+      .then((data) => {
+        fix = filterFixtures(data.fixtures);
+        gamedays = determineGamedays(fixtures.unfinished);
+      })
+      .catch((err) => {
+        handleError(err);
+      });
+
+    this.fixtures = {
+      finished: fix.finished,
+      unfinished: fix.unfinished,
+      finishedProvisional: fix.finishedProvisional,
+    };
+    this.currentGameDay = determineCurrentDay(gamedays);
+    this.nextGameDay = determineNextDay(gamedays);
+    this.timeOfNextAction = null;
+    this.run = this.run.bind(this);
+    this.runGameday = this.runGameday.bind(this);
+  }
+
+  /**
+   * Controls running of data loader during active gameweek
+   */
+  run() {
+    console.log('Running gameweek function');
+    // determine next gameday
+
+    // run gameday
+  }
+
+  /**
+   * manages dataloader during a specific gameweeks gaameday
+   */
+  runGameday() {
+
+  }
 }
 
 /* At end of gameweek
@@ -105,10 +159,13 @@ function activeGameweek(fixtures) {
   - reproduce any analysis tables
   - refresh any data sources for website
 */
+/**
+ * @return {string}
+ *
 function endGameweek() {
-
+  return '';
 }
-
+*/
 /* Total expected API calls
   - Main process ./drf/bootstrap-static - 504 api calls per week
   - fetchEvents  ./drf/event/{gameweek}/live - 40 to 45 calls per week
